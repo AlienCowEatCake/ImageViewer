@@ -603,6 +603,7 @@ class OpenH264VideoEncoder : public GMPVideoEncoder, public RefCounted {
   void Encode_w (GMPVideoi420Frame* inputImage,
                  GMPVideoFrameType frame_type) {
     SFrameBSInfo encoded;
+    memset (&encoded, 0, sizeof (encoded));
 
     if (frame_type  == kGMPKeyFrame) {
       encoder_->ForceIntraFrame (true);
@@ -633,8 +634,16 @@ class OpenH264VideoEncoder : public GMPVideoEncoder, public RefCounted {
     const SSourcePicture* pics = &src;
 
     int result = encoder_->EncodeFrame (pics, &encoded);
-    if (result != cmResultSuccess) {
-      GMPLOG (GL_ERROR, "Couldn't encode frame. Error = " << result);
+    if (result != cmResultSuccess || encoded.eFrameType == videoFrameTypeInvalid) {
+      GMPLOG (GL_ERROR, "Couldn't encode frame. Error = "
+              << result
+              << " Type = "
+              << encoded.eFrameType);
+      TrySyncRunOnMainThread (WrapTask (
+                                   this,
+                                   &OpenH264VideoEncoder::EncodeFailed_m,
+                                   inputImage));
+      return;
     }
 
 
@@ -660,11 +669,10 @@ class OpenH264VideoEncoder : public GMPVideoEncoder, public RefCounted {
       break;
     case videoFrameTypeIPMixed://this type is currently not suppported
     case videoFrameTypeInvalid:
-      GMPLOG (GL_ERROR, "Couldn't encode frame. Type = "
-              << encoded.eFrameType);
-      break;
     default:
       // The API is defined as returning a type.
+      GMPLOG (GL_ERROR, "Couldn't encode frame. Type = "
+              << encoded.eFrameType);
       assert (false);
       break;
     }
@@ -778,6 +786,12 @@ class OpenH264VideoEncoder : public GMPVideoEncoder, public RefCounted {
     frame->Destroy();
   }
 
+  // The frame must be destroyed, and the error reported, on the main thread.
+  void EncodeFailed_m (GMPVideoi420Frame* frame) {
+    frame->Destroy();
+    Error (GMPEncodeErr);
+  }
+
 
  private:
   GMPVideoHost* host_;
@@ -876,35 +890,62 @@ class OpenH264VideoDecoder : public GMPVideoDecoder, public RefCounted {
       // Convert the AVCC data, starting at the byte containing
       // numOfSequenceParameterSets, to Annex B format.
       const uint8_t* avcc = aCodecSpecific + offsetof(GMPVideoCodecH264, mAVCC.mNumSPS);
+      // aCodecSpecificSize is only validated as a floor above.
+      // The AVCC SPS/PPS counts and 16-bit length fields must be validated,
+      // so bound every read against the end of the codec-specific buffer; the
+      // walking pointer must never read past the allocation.
+      const uint8_t* const avccEnd = aCodecSpecific + aCodecSpecificSize;
+      bool bAvccValid = true;
 
       static const int kSPSMask = (1 << 5) - 1;
-      uint8_t spsCount = *avcc++ & kSPSMask;
-      for (int i = 0; i < spsCount; ++i) {
+      uint8_t spsCount = 0;
+      if (avcc < avccEnd) {
+        spsCount = *avcc++ & kSPSMask;
+      } else {
+        bAvccValid = false;
+      }
+      for (int i = 0; bAvccValid && i < spsCount; ++i) {
+        if (avccEnd - avcc < 2) { bAvccValid = false; break; }
         size_t size = readU16BE(avcc);
         avcc += 2;
+        if (size > static_cast<size_t> (avccEnd - avcc)) { bAvccValid = false; break; }
         copyWithStartCode(annexb, avcc, size);
         avcc += size;
       }
 
-      uint8_t ppsCount = *avcc++;
-      for (int i = 0; i < ppsCount; ++i) {
+      uint8_t ppsCount = 0;
+      if (bAvccValid) {
+        if (avcc < avccEnd) {
+          ppsCount = *avcc++;
+        } else {
+          bAvccValid = false;
+        }
+      }
+      for (int i = 0; bAvccValid && i < ppsCount; ++i) {
+        if (avccEnd - avcc < 2) { bAvccValid = false; break; }
         size_t size = readU16BE(avcc);
         avcc += 2;
+        if (size > static_cast<size_t> (avccEnd - avcc)) { bAvccValid = false; break; }
         copyWithStartCode(annexb, avcc, size);
         avcc += size;
       }
 
-      SBufferInfo decoded;
-      memset (&decoded, 0, sizeof (decoded));
-      unsigned char* data[3] = {nullptr, nullptr, nullptr};
-      DECODING_STATE dState = decoder_->DecodeFrame2 (&*annexb.begin(),
-                                                      annexb.size(),
-                                                      data,
-                                                      &decoded);
-      if (dState) {
-        GMPLOG (GL_ERROR, "Decoding error dState=" << dState);
+      if (!bAvccValid) {
+        GMPLOG (GL_ERROR, "InitDecode(): malformed AVCC extradata (size "
+                << aCodecSpecificSize << "); skipping SPS/PPS priming");
+      } else if (!annexb.empty()) {
+        SBufferInfo decoded;
+        memset (&decoded, 0, sizeof (decoded));
+        unsigned char* data[3] = {nullptr, nullptr, nullptr};
+        DECODING_STATE dState = decoder_->DecodeFrame2 (&*annexb.begin(),
+                                                        annexb.size(),
+                                                        data,
+                                                        &decoded);
+        if (dState) {
+          GMPLOG (GL_ERROR, "Decoding error dState=" << dState);
+        }
+        GMPLOG (GL_ERROR, "InitDecode iBufferStatus=" << decoded.iBufferStatus);
       }
-      GMPLOG (GL_ERROR, "InitDecode iBufferStatus=" << decoded.iBufferStatus);
     }
   }
 
@@ -930,14 +971,25 @@ class OpenH264VideoDecoder : public GMPVideoDecoder, public RefCounted {
       break;
 
     case GMP_BufferLength32: {
+      static const uint8_t code[] = { 0x00, 0x00, 0x00, 0x01 };
       uint8_t* start_code = inputFrame->Buffer();
-      // start code should be at least four bytes from the end or we risk
-      // reading/writing outside the buffer.
-      while (start_code < inputFrame->Buffer() + inputFrame->Size() - 4) {
-        static const uint8_t code[] = { 0x00, 0x00, 0x00, 0x01 };
-        uint8_t* lenp = start_code;
-        start_code += * (reinterpret_cast<int32_t*> (lenp));
-        memcpy (lenp, code, 4);
+      uint32_t remaining = inputFrame->Size();
+
+      // Keep old semantics: length field includes the 4-byte length header.
+      while (remaining >= sizeof (uint32_t)) {
+        uint32_t nal_length = 0;
+        memcpy (&nal_length, start_code, sizeof (nal_length));
+        if (nal_length <= sizeof (uint32_t) || nal_length > remaining) {
+          GMPLOG (GL_ERROR, "Malformed GMP_BufferLength32 frame: nal_length="
+                  << nal_length << " remaining=" << remaining);
+          inputFrame->Destroy();
+          Error (GMPDecodeErr);
+          return;
+        }
+
+        memcpy (start_code, code, sizeof (code));
+        start_code += nal_length;
+        remaining -= nal_length;
       }
     }
     break;
@@ -1029,11 +1081,11 @@ class OpenH264VideoDecoder : public GMPVideoDecoder, public RefCounted {
     if (gmp_api_version_ >= kGMPVersion34) {
       decoded.uiInBsTimeStamp = inputFrame->TimeStamp();
     }
-    unsigned char* data[3] = {nullptr, nullptr, nullptr};
+    memset(data_, 0, sizeof(data_));
 
     dState = decoder_->DecodeFrameNoDelay (inputFrame->Buffer(),
                                      inputFrame->Size(),
-                                     data,
+                                     data_,
                                      &decoded);
 
     if (dState) {
@@ -1047,7 +1099,7 @@ class OpenH264VideoDecoder : public GMPVideoDecoder, public RefCounted {
                                  &OpenH264VideoDecoder::Decode_m,
                                  inputFrame,
                                  &decoded,
-                                 data,
+                                 data_,
                                  renderTimeMs,
                                  valid));
   }
@@ -1166,6 +1218,8 @@ class OpenH264VideoDecoder : public GMPVideoDecoder, public RefCounted {
   FrameStats stats_;
   uint32_t gmp_api_version_;
   bool shutting_down;
+  // Make data_, used in Decode_w(), live as long as the class object.
+  unsigned char* data_[3];
 };
 
 extern "C" {

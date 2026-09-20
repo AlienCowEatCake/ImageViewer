@@ -4,6 +4,8 @@
 #include "decoder_context.h"
 #include "decoder.h"
 #include "decoder_core.h"
+#include "error_concealment.h"
+#include "fmo.h"
 #include "welsCodecTrace.h"
 #include "../../common/src/welsCodecTrace.cpp"
 
@@ -134,7 +136,7 @@ class DecoderParseSyntaxTest : public ::testing::Test {
     }
   }
   //Init members
-  int32_t Init();
+  int32_t Init (bool bParseOnly = false);
   //Uninit members
   void Uninit();
   //Decoder real bitstream
@@ -146,6 +148,9 @@ class DecoderParseSyntaxTest : public ::testing::Test {
   //specific bitstream test
   void TestSpecificBs();
   void TestSpecificBsError();
+  //I_PCM CAVLC bounds handling
+  void TestIPcmCavlcRegression();
+  void TestIPcmCavlcTruncated();
   //Do whole tests here
   void DecoderParseSyntaxTestAll();
 
@@ -169,7 +174,7 @@ class DecoderParseSyntaxTest : public ::testing::Test {
 };
 
 //Init members
-int32_t DecoderParseSyntaxTest::Init() {
+int32_t DecoderParseSyntaxTest::Init (bool bParseOnly) {
   memset (&m_sBufferInfo, 0, sizeof (SBufferInfo));
   memset (&m_sDecParam, 0, sizeof (SDecodingParam));
   memset (&m_sParserBsInfo, 0, sizeof (SParserBsInfo));
@@ -184,7 +189,7 @@ int32_t DecoderParseSyntaxTest::Init() {
   m_sDecParam.eEcActiveIdc = (ERROR_CON_IDC)7;
   m_sDecParam.sVideoProperty.size = sizeof (SVideoProperty);
   m_sDecParam.sVideoProperty.eVideoBsType = (VIDEO_BITSTREAM_TYPE) (rand() % 2);
-  m_sDecParam.bParseOnly = false;
+  m_sDecParam.bParseOnly = bParseOnly;
 
   m_pData[0] = m_pData[1] = m_pData[2] = NULL;
   m_szBuffer[0] = m_szBuffer[1] = m_szBuffer[2] = 0;
@@ -434,12 +439,330 @@ void DecoderParseSyntaxTest::TestSpecificBsError() {
   Uninit();
 }
 
+// Regression: a valid CAVLC stream that uses I_PCM macroblocks must keep
+// decoding correctly after the I_PCM 384-byte bounds check was added.
+// CVPCMNL1_SVA_C.264 is a CAVLC I_PCM conformance stream (exercises the
+// patched WelsActualDecodeMbCavlcISlice path).
+void DecoderParseSyntaxTest::TestIPcmCavlcRegression() {
+  int32_t iRet = Init();
+  ASSERT_EQ (iRet, ERR_NONE);
+  ASSERT_TRUE (DecodeBs ("res/CVPCMNL1_SVA_C.264", CorrectDec));
+  Uninit();
+}
+
+// Security regression for SPARK-814292 (CWE-125): a CAVLC I_PCM macroblock
+// copies 384 bytes straight from the bitstream buffer. When the buffer is
+// truncated mid I_PCM, the decoder must fail closed instead of reading past
+// the allocation. Feeding a truncated all-I_PCM stream must not crash and
+// must surface a decoding error rather than dsErrorFree.
+void DecoderParseSyntaxTest::TestIPcmCavlcTruncated() {
+  int32_t iRet = Init();
+  ASSERT_EQ (iRet, ERR_NONE);
+
+  // Disable error concealment so a truncated I_PCM macroblock surfaces as a
+  // bitstream error instead of being silently concealed.
+  m_pCtx->pParam->eEcActiveIdc = ERROR_CON_DISABLE;
+  InitErrorCon (m_pCtx);
+
+  FILE* pH264File = fopen ("res/CVPCMNL1_SVA_C.264", "rb");
+  ASSERT_TRUE (pH264File != NULL);
+  fseek (pH264File, 0L, SEEK_END);
+  int32_t iFileSize = (int32_t) ftell (pH264File);
+  fseek (pH264File, 0L, SEEK_SET);
+  ASSERT_GT (iFileSize, 384);
+
+  // Drop the trailing 384 bytes so the final I_PCM macroblock is short of a
+  // full 384-byte PCM payload.
+  int32_t iTruncatedSize = iFileSize - 384;
+  uint8_t* pBuf = new uint8_t[iTruncatedSize + 4];
+  ASSERT_TRUE (pBuf != NULL);
+  size_t uiRead = fread (pBuf, 1, iTruncatedSize, pH264File);
+  fclose (pH264File);
+  ASSERT_EQ (uiRead, (size_t) iTruncatedSize);
+  uint8_t uiStartCode[4] = {0, 0, 0, 1};
+  memcpy (pBuf + iTruncatedSize, &uiStartCode[0], 4);
+
+  int32_t iBufPos = 0;
+  int32_t iAggregatedRet = 0;
+  while (iBufPos < iTruncatedSize) {
+    int32_t i = 0;
+    for (i = 0; i < iTruncatedSize - iBufPos; i++) {
+      if (pBuf[iBufPos + i] == 0 && pBuf[iBufPos + i + 1] == 0 && pBuf[iBufPos + i + 2] == 0
+          && pBuf[iBufPos + i + 3] == 1 && i > 0) {
+        break;
+      }
+    }
+    int32_t iSliceSize = i;
+    if (iSliceSize <= 0)
+      break;
+    // The key property is stability: no out-of-bounds read / crash while
+    // decoding the truncated I_PCM payload.
+    iAggregatedRet |= DecodeFrame (pBuf + iBufPos, iSliceSize, m_pData, &m_sBufferInfo, m_pCtx);
+    iBufPos += iSliceSize;
+  }
+  // Flush the decoder so any delayed/buffered picture is emitted with its status.
+  int32_t iEndOfStreamFlag = 1;
+  m_pDec->SetOption (DECODER_OPTION_END_OF_STREAM, (void*)&iEndOfStreamFlag);
+  iAggregatedRet |= DecodeFrame (NULL, 0, m_pData, &m_sBufferInfo, m_pCtx);
+
+  // Truncated I_PCM must not be reported as a clean decode.
+  EXPECT_NE (dsErrorFree, iAggregatedRet);
+
+  delete[] pBuf;
+  Uninit();
+}
+
+// Verify that ExpandBsBuffer retargets pNalPos for both current-AU and queued
+// next-AU NALs; pre-fix, only [0, uiActualUnitsNum] was walked, leaving
+// next-AU entries dangling into the freed sSavedData buffer.
+TEST_F (DecoderParseSyntaxTest, ExpandBsBufferRetargetsParseOnlyNalPos) {
+  ASSERT_EQ (cmResultSuccess, Init (true));
+
+  ASSERT_TRUE (m_pCtx != NULL);
+  ASSERT_TRUE (m_pCtx->pParam != NULL);
+  ASSERT_TRUE (m_pCtx->pParam->bParseOnly);
+  ASSERT_TRUE (m_pCtx->sSavedData.pHead != NULL);
+  ASSERT_TRUE (m_pCtx->pAccessUnitList != NULL);
+  ASSERT_TRUE (m_pCtx->pAccessUnitList->pNalUnitsList != NULL);
+  ASSERT_TRUE (m_pCtx->pAccessUnitList->uiCountUnitsNum >= 2);
+
+  // Slot 0: current-AU NAL; slot 1: queued next-AU NAL (uiAvailUnitsNum > uiActualUnitsNum).
+  m_pCtx->pAccessUnitList->uiActualUnitsNum = 1;
+  m_pCtx->pAccessUnitList->uiAvailUnitsNum  = 2;
+
+  uint8_t* pOldSavedHead = m_pCtx->sSavedData.pHead;
+  const int32_t kiOldSavedSize = m_pCtx->iMaxBsBufferSizeInByte;
+  ASSERT_TRUE (kiOldSavedSize > 64);
+
+  PNalUnit pNal0 = m_pCtx->pAccessUnitList->pNalUnitsList[0];
+  PNalUnit pNal1 = m_pCtx->pAccessUnitList->pNalUnitsList[1];
+  ASSERT_TRUE (pNal0 != NULL);
+  ASSERT_TRUE (pNal1 != NULL);
+
+  pNal0->sNalData.sVclNal.pNalPos = pOldSavedHead + 16;
+  pNal1->sNalData.sVclNal.pNalPos = pOldSavedHead + 32;  // queued next-AU entry
+
+  const int32_t kiSrcLen = kiOldSavedSize / MAX_BUFFERED_NUM + 1;
+  ASSERT_EQ (ERR_NONE, ExpandBsBuffer (m_pCtx, kiSrcLen));
+
+  ASSERT_TRUE (m_pCtx->sSavedData.pHead != NULL);
+  EXPECT_NE (pOldSavedHead, m_pCtx->sSavedData.pHead);
+  // Both current-AU and queued next-AU pNalPos must be retargeted.
+  EXPECT_EQ (m_pCtx->sSavedData.pHead + 16, pNal0->sNalData.sVclNal.pNalPos);
+  EXPECT_EQ (m_pCtx->sSavedData.pHead + 32, pNal1->sNalData.sVclNal.pNalPos);
+
+  Uninit();
+}
+
 //TEST here for whole tests
 TEST_F (DecoderParseSyntaxTest, DecoderParseSyntaxTestAll) {
 
   TestScalingList();
   TestSpecificBs();
   TestSpecificBsError();
+  TestIPcmCavlcRegression();
+  TestIPcmCavlcTruncated();
 }
 
+TEST (DecoderFmoSecurityTest, RejectsOversizedRunLengthBeforeIndexWrap) {
+  SFmo sFmo;
+  SPps sPps;
+  memset (&sFmo, 0, sizeof (sFmo));
+  memset (&sPps, 0, sizeof (sPps));
+
+  sPps.uiNumSliceGroups = 2;
+  sPps.uiSliceGroupMapType = 0;
+  sPps.uiRunLength[0] = 0xffffffffu;
+  sPps.uiRunLength[1] = 1;
+
+  CMemoryAlign cMa (16);
+  const int32_t iRet = InitFmo (&sFmo, &sPps, 120, 68, &cMa);
+  EXPECT_NE (ERR_NONE, iRet);
+
+  // The rejection path must also free the allocation map it allocated, otherwise
+  // the FMO is left allocated-but-inactive and leaks (CMemoryAlign asserts on
+  // teardown). A non-NULL map here means the leak regressed.
+  EXPECT_TRUE (NULL == sFmo.pMbAllocMap);
+
+  if (NULL != sFmo.pMbAllocMap) {
+    cMa.WelsFree (sFmo.pMbAllocMap, "_fmo->pMbAllocMap");
+    sFmo.pMbAllocMap = NULL;
+  }
+}
+
+TEST (DecoderReorderingBufferTest, PartialResetInitializesPicBuffIdx) {
+  SPictReoderingStatus sStatus;
+  SPictInfo sPictInfo[16];
+
+  memset (&sStatus, 0, sizeof (sStatus));
+  memset (&sPictInfo, 0, sizeof (sPictInfo));
+
+  for (int32_t i = 0; i < 16; ++i) {
+    sPictInfo[i].iPOC = i + 100;
+    sPictInfo[i].iPicBuffIdx = i + 200;
+  }
+  sPictInfo[0].sBufferInfo.iBufferStatus = 1;
+  sStatus.iLargestBufferedPicIndex = 3;
+
+  ResetReorderingPictureBuffers (&sStatus, sPictInfo, false);
+
+  for (int32_t i = 0; i <= 3; ++i) {
+    EXPECT_EQ (IMinInt32, sPictInfo[i].iPOC);
+    EXPECT_EQ (-1, sPictInfo[i].iPicBuffIdx);
+  }
+
+  // Partial reset should not touch entries beyond iLargestBufferedPicIndex.
+  EXPECT_EQ (104, sPictInfo[4].iPOC);
+  EXPECT_EQ (204, sPictInfo[4].iPicBuffIdx);
+  EXPECT_EQ (0, sPictInfo[0].sBufferInfo.iBufferStatus);
+  EXPECT_FALSE (sStatus.bHasBSlice);
+  EXPECT_EQ (0, sStatus.iNumOfPicts);
+  EXPECT_EQ (0, sStatus.iLargestBufferedPicIndex);
+}
+
+TEST (DecoderReorderingBufferTest, FullResetInitializesPicBuffIdx) {
+  SPictReoderingStatus sStatus;
+  SPictInfo sPictInfo[16];
+
+  memset (&sStatus, 0, sizeof (sStatus));
+  memset (&sPictInfo, 0, sizeof (sPictInfo));
+
+  for (int32_t i = 0; i < 16; ++i) {
+    sPictInfo[i].iPOC = i + 300;
+    sPictInfo[i].iPicBuffIdx = i + 400;
+  }
+  sStatus.iLargestBufferedPicIndex = 1;
+
+  ResetReorderingPictureBuffers (&sStatus, sPictInfo, true);
+
+  for (int32_t i = 0; i < 16; ++i) {
+    EXPECT_EQ (IMinInt32, sPictInfo[i].iPOC);
+    EXPECT_EQ (-1, sPictInfo[i].iPicBuffIdx);
+  }
+  EXPECT_FALSE (sStatus.bHasBSlice);
+  EXPECT_EQ (0, sStatus.iLargestBufferedPicIndex);
+}
+
+TEST_F (DecoderParseSyntaxTest, ExpandBsBufferRetargetsQueuedNalUnitsOnly) {
+  ASSERT_EQ (ERR_NONE, Init());
+  ASSERT_TRUE (m_pCtx != NULL);
+  ASSERT_TRUE (m_pCtx->pAccessUnitList != NULL);
+
+  PAccessUnit pAu = m_pCtx->pAccessUnitList;
+  ASSERT_TRUE (pAu->uiCountUnitsNum >= 3);
+  ASSERT_TRUE (m_pCtx->sRawData.pHead != NULL);
+
+  uint8_t* pOldHead = m_pCtx->sRawData.pHead;
+  PBitStringAux pActual = &pAu->pNalUnitsList[0]->sNalData.sVclNal.sSliceBitsRead;
+  pActual->pStartBuf = pOldHead + 8;
+  pActual->pCurBuf = pOldHead + 12;
+  pActual->pEndBuf = pOldHead + 16;
+
+  PBitStringAux pQueued = &pAu->pNalUnitsList[1]->sNalData.sVclNal.sSliceBitsRead;
+  pQueued->pStartBuf = pOldHead + 24;
+  pQueued->pCurBuf = pOldHead + 28;
+  pQueued->pEndBuf = pOldHead + 32;
+
+  PBitStringAux pOnePastAvail = &pAu->pNalUnitsList[2]->sNalData.sVclNal.sSliceBitsRead;
+  pOnePastAvail->pStartBuf = pOldHead + 40;
+  pOnePastAvail->pCurBuf = pOldHead + 44;
+  pOnePastAvail->pEndBuf = pOldHead + 48;
+  uint8_t* pOnePastStartBefore = pOnePastAvail->pStartBuf;
+  uint8_t* pOnePastCurBefore = pOnePastAvail->pCurBuf;
+  uint8_t* pOnePastEndBefore = pOnePastAvail->pEndBuf;
+
+  pAu->uiAvailUnitsNum = 2;
+  pAu->uiActualUnitsNum = 1; // queued count is still 2, so index 1 must be retargeted
+
+  ASSERT_EQ (ERR_NONE, ExpandBsBuffer (m_pCtx, m_pCtx->iMaxBsBufferSizeInByte));
+  ASSERT_TRUE (m_pCtx->sRawData.pHead != pOldHead);
+
+  EXPECT_EQ (m_pCtx->sRawData.pHead + 8, pActual->pStartBuf);
+  EXPECT_EQ (m_pCtx->sRawData.pHead + 12, pActual->pCurBuf);
+  EXPECT_EQ (m_pCtx->sRawData.pHead + 16, pActual->pEndBuf);
+
+  EXPECT_EQ (m_pCtx->sRawData.pHead + 24, pQueued->pStartBuf);
+  EXPECT_EQ (m_pCtx->sRawData.pHead + 28, pQueued->pCurBuf);
+  EXPECT_EQ (m_pCtx->sRawData.pHead + 32, pQueued->pEndBuf);
+
+  // Slot at index uiAvailUnitsNum (one-past queued range) must not be touched.
+  EXPECT_EQ (pOnePastStartBefore, pOnePastAvail->pStartBuf);
+  EXPECT_EQ (pOnePastCurBefore, pOnePastAvail->pCurBuf);
+  EXPECT_EQ (pOnePastEndBefore, pOnePastAvail->pEndBuf);
+
+  Uninit();
+}
+
+TEST (DecoderBitStreamBoundsTest, DecInitBitsHandlesShortSeedBytesSafely) {
+  uint8_t uiBuf[3] = {0xff, 0xff, 0xff};
+  SBitStringAux sBs;
+  memset (&sBs, 0, sizeof (sBs));
+
+  ASSERT_EQ (ERR_NONE, DecInitBits (&sBs, uiBuf, 24));
+
+  uint32_t uiCode = 0;
+  EXPECT_EQ (ERR_NONE, BsGetBits (&sBs, 16, &uiCode));
+  EXPECT_EQ (ERR_NONE, BsGetBits (&sBs, 16, &uiCode));
+  EXPECT_EQ (ERR_INFO_READ_OVERFLOW, BsGetBits (&sBs, 16, &uiCode));
+}
+
+TEST (DecoderBitStreamBoundsTest, BsGetBitsStopsOnTwoByteOverread) {
+  uint8_t uiBuf[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+  SBitStringAux sBs;
+  memset (&sBs, 0, sizeof (sBs));
+
+  ASSERT_EQ (ERR_NONE, DecInitBits (&sBs, uiBuf, 48));
+
+  uint32_t uiCode = 0;
+  EXPECT_EQ (ERR_NONE, BsGetBits (&sBs, 16, &uiCode));
+  EXPECT_EQ (ERR_NONE, BsGetBits (&sBs, 16, &uiCode));
+  EXPECT_EQ (ERR_NONE, BsGetBits (&sBs, 16, &uiCode));
+  EXPECT_EQ (ERR_INFO_READ_OVERFLOW, BsGetBits (&sBs, 16, &uiCode));
+}
+
+// Regression: WelsDecodeBs must not wrap sRawData to pHead when queued VCL
+// NALs have sSliceBitsRead.pStartBuf pointing into the region that would be
+// overwritten by the incoming write.  Pre-fix, the wrap was unconditional and
+// silently replaced queued slice bytes with the new input bytes while leaving
+// the saved bit-reader pointer unchanged.
+TEST_F (DecoderParseSyntaxTest, WelsDecodeBsRejectsWrapIntoQueuedSlice) {
+  ASSERT_EQ (ERR_NONE, Init());
+  ASSERT_TRUE (m_pCtx != NULL);
+  ASSERT_TRUE (m_pCtx->pAccessUnitList != NULL);
+  ASSERT_TRUE (m_pCtx->sRawData.pHead != NULL);
+
+  PAccessUnit pAu = m_pCtx->pAccessUnitList;
+  const int32_t kiBufSize = m_pCtx->iMaxBsBufferSizeInByte;
+
+  // Place a synthetic queued VCL slice bit-reader at offset 8 from pHead,
+  // within the region that a full-buffer wrap would overwrite.
+  PBitStringAux pBs = &pAu->pNalUnitsList[0]->sNalData.sVclNal.sSliceBitsRead;
+  pBs->pStartBuf = m_pCtx->sRawData.pHead + 8;
+  pBs->pCurBuf   = m_pCtx->sRawData.pHead + 8;
+  pBs->pEndBuf   = m_pCtx->sRawData.pHead + kiBufSize / 4;
+  pAu->uiAvailUnitsNum = 1;
+
+  // Position write cursor near pEnd so any new input forces a wrap.
+  m_pCtx->sRawData.pCurPos = m_pCtx->sRawData.pEnd - 3;
+
+  // Remember the bytes the queued slice points to before the wrap attempt.
+  uint8_t snapshot[8];
+  memcpy (snapshot, pBs->pStartBuf, sizeof (snapshot));
+  const uint8_t* pStartBefore = pBs->pStartBuf;
+
+  // Input large enough to trigger wrap check (kiBsLen + 4 > pEnd - pCurPos).
+  static const uint8_t kFiller[16] = {0, 0, 0, 1, 0x0c, 0x80, 0, 0, 0, 1, 0x0c, 0x80, 0, 0, 0, 1};
+  uint8_t* dst[3] = {NULL, NULL, NULL};
+  SBufferInfo dstInfo;
+  memset (&dstInfo, 0, sizeof (dstInfo));
+  m_pCtx->bEndOfStreamFlag = false;
+  WelsDecodeBs (m_pCtx, kFiller, static_cast<int32_t> (sizeof (kFiller)), dst, &dstInfo, NULL);
+
+  // The pointer must not have moved (no retarget happened).
+  EXPECT_EQ (pStartBefore, pBs->pStartBuf);
+  // The bytes at the queued slice start must be unchanged.
+  EXPECT_EQ (0, memcmp (snapshot, pBs->pStartBuf, sizeof (snapshot)));
+
+  Uninit();
+}
 

@@ -496,6 +496,7 @@ int32_t ParamValidationExt (SLogContext* pLogCtx, SWelsSvcCodingParam* pCodingPa
     SSpatialLayerConfig* pSpatialLayer = &pCodingParam->sSpatialLayers[i];
     int32_t kiPicWidth = pSpatialLayer->iVideoWidth;
     int32_t kiPicHeight = pSpatialLayer->iVideoHeight;
+    const int64_t kiMaxPixelsPerFrame = (static_cast<int64_t> (MAX_MBS_PER_FRAME) << 8);
     uint32_t iMbWidth           = 0;
     uint32_t iMbHeight          = 0;
     int32_t iMbNumInFrame       = 0;
@@ -512,7 +513,8 @@ int32_t ParamValidationExt (SLogContext* pLogCtx, SWelsSvcCodingParam* pCodingPa
                pSpatialLayer->iVideoWidth, pSpatialLayer->iVideoHeight);
     }
 
-    if ((kiPicWidth <= 0) || (kiPicHeight <= 0) || (kiPicWidth * kiPicHeight > (MAX_MBS_PER_FRAME << 8))) {
+    if ((kiPicWidth <= 0) || (kiPicHeight <= 0)
+        || (static_cast<int64_t> (kiPicWidth) * kiPicHeight > kiMaxPixelsPerFrame)) {
       WelsLog (pLogCtx, WELS_LOG_ERROR,
                "ParamValidationExt(), width > 0, height > 0, width * height <= %d, invalid %d x %d in dependency layer settings!",
                (MAX_MBS_PER_FRAME << 8), kiPicWidth, kiPicHeight);
@@ -1591,8 +1593,7 @@ int32_t RequestMemorySvc (sWelsEncCtx** ppCtx, SExistingParasetList* pExistingPa
     iLayerBsSize = WELS_ROUND (((3 * fDlp->iVideoWidth * fDlp->iVideoHeight) >> 1) * fCompressRatioThr) +
                    MAX_MACROBLOCK_SIZE_IN_BYTE_x2;
     iLayerBsSize = WELS_ALIGN (iLayerBsSize, 4); // 4 bytes alinged
-    iVclLayersBsSizeCount += iLayerBsSize;
-
+    int32_t iMaxLayerBsSize = 0;
     SSliceArgument* pSliceArgument = & (fDlp->sSliceArgument);
     if (pSliceArgument->uiSliceMode == SM_SIZELIMITED_SLICE) {
       bDynamicSlice = true;
@@ -1601,15 +1602,23 @@ int32_t RequestMemorySvc (sWelsEncCtx** ppCtx, SExistingParasetList* pExistingPa
       (*ppCtx)->iMaxSliceCount = WELS_MAX ((*ppCtx)->iMaxSliceCount, (int) uiMaxSliceNumEstimation);
       iSliceBufferSize = (WELS_MAX (pSliceArgument->uiSliceSizeConstraint,
                                     iLayerBsSize / uiMaxSliceNumEstimation) << 1) + MAX_MACROBLOCK_SIZE_IN_BYTE_x2;
+      iMaxLayerBsSize = iSliceBufferSize * uiMaxSliceNumEstimation;
     } else {
       (*ppCtx)->iMaxSliceCount = WELS_MAX ((*ppCtx)->iMaxSliceCount, (int) pSliceArgument->uiSliceNum);
-      iSliceBufferSize = ((iLayerBsSize / pSliceArgument->uiSliceNum) << 1) + MAX_MACROBLOCK_SIZE_IN_BYTE_x2;
+      if (pParam->bUseLoadBalancing) {
+        iSliceBufferSize = iLayerBsSize + MAX_MACROBLOCK_SIZE_IN_BYTE_x2;
+      } else {
+        iSliceBufferSize = ((iLayerBsSize / pSliceArgument->uiSliceNum) << 1) + MAX_MACROBLOCK_SIZE_IN_BYTE_x2;
+      }
+      iMaxLayerBsSize = iSliceBufferSize * pSliceArgument->uiSliceNum;
     }
+    iMaxLayerBsSize = WELS_MAX (iMaxLayerBsSize, iLayerBsSize);
+    iVclLayersBsSizeCount += iMaxLayerBsSize;
     iMaxSliceBufferSize                = WELS_MAX (iMaxSliceBufferSize, iSliceBufferSize);
     (*ppCtx)->iSliceBufferSize[iIndex] = iSliceBufferSize;
     ++ iIndex;
   }
-  iTargetSpatialBsSize = iLayerBsSize;
+  iTargetSpatialBsSize = iVclLayersBsSizeCount;
   iCountBsLen = iNonVclLayersBsSizeCount + iVclLayersBsSizeCount;
 
   iMaxSliceBufferSize = WELS_MIN (iMaxSliceBufferSize, iTargetSpatialBsSize);
@@ -3483,10 +3492,10 @@ int32_t WelsEncoderEncodeExt (sWelsEncCtx* pCtx, SFrameBSInfo* pFbi, const SSour
     pFbi->sLayerInfo[iNalIdx].iNalCount  = 0;
   }
   // perform csc/denoise/downsample/padding, generate spatial layers
-  iSpatialNum = pCtx->pVpp->BuildSpatialPicList (pCtx, pSrcPic);
-  if (iSpatialNum == -1) {
-    WelsLog (& (pCtx->sLogCtx), WELS_LOG_ERROR, "Failed in allocating memory in BuildSpatialPicList");
-    return ENC_RETURN_MEMALLOCERR;
+  int32_t iRet = pCtx->pVpp->BuildSpatialPicList (pCtx, pSrcPic, &iSpatialNum);
+  if (iRet != ENC_RETURN_SUCCESS) {
+    WelsLog (& (pCtx->sLogCtx), WELS_LOG_ERROR, "Failed in BuildSpatialPicList, error=%d", iRet);
+    return iRet;
   }
 
   if (pCtx->pFuncList->pfRc.pfWelsUpdateMaxBrWindowStatus) {
@@ -3738,6 +3747,7 @@ int32_t WelsEncoderEncodeExt (sWelsEncCtx* pCtx, SFrameBSInfo* pFbi, const SSour
         }
 
         iLayerSize = AppendSliceToFrameBs (pCtx, pLayerBsInfo, iSliceCount);
+        WELS_VERIFY_RETURN_IFNEQ (pCtx->iEncoderError, ENC_RETURN_SUCCESS)
       }
       // THREAD_FULLY_FIRE_MODE && SM_SIZELIMITED_SLICE
       else if ((SM_SIZELIMITED_SLICE == pParam->sSliceArgument.uiSliceMode) && (pSvcParam->iMultipleThreadIdc > 1)) {
@@ -3787,6 +3797,7 @@ int32_t WelsEncoderEncodeExt (sWelsEncCtx* pCtx, SFrameBSInfo* pFbi, const SSour
 
         iSliceCount = GetCurrentSliceNum (pCtx->pCurDqLayer);
         iLayerSize  = AppendSliceToFrameBs (pCtx, pLayerBsInfo, iSliceCount);
+        WELS_VERIFY_RETURN_IFNEQ (pCtx->iEncoderError, ENC_RETURN_SUCCESS)
       } else { // for non-dynamic-slicing mode single threading branch..
         const bool bNeedPrefix = pCtx->bNeedPrefixNalFlag;
         int32_t iSliceIdx    = 0;

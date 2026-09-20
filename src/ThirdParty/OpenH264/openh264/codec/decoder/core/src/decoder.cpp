@@ -148,7 +148,8 @@ static int32_t IncreasePicBuff (PWelsDecoderContext pCtx, PPicBuff* ppPicBuf, co
   pPicNewBuf->iCurrentIdx = pPicOldBuf->iCurrentIdx;
   * ppPicBuf              = pPicNewBuf;
 
-  for (int32_t i = 0; i < pPicNewBuf->iCapacity; i++) {
+  // only initialize new slots; old slots must preserve iRefCount pinned by output buffering
+  for (int32_t i = kiOldSize; i < pPicNewBuf->iCapacity; i++) {
     pPicNewBuf->ppPic[i]->bUsedAsRef = false;
     pPicNewBuf->ppPic[i]->bIsLongRef = false;
     pPicNewBuf->ppPic[i]->iRefCount = 0;
@@ -302,6 +303,7 @@ void ResetReorderingPictureBuffers (PPictReoderingStatus pPictReoderingStatus, P
     pPictReoderingStatus->iLargestBufferedPicIndex = 0;
     for (int32_t i = 0; i < pictInfoListCount; ++i) {
       pPictInfo[i].iPOC = IMinInt32;
+      pPictInfo[i].iPicBuffIdx = -1; //ensure a deterministic invalid sentinel so error-path decoding cannot leave heap garbage
     }
     pPictInfo->sBufferInfo.iBufferStatus = 0;
 		pPictReoderingStatus->bHasBSlice = false;
@@ -737,6 +739,21 @@ void GetVclNalTemporalId (PWelsDecoderContext pCtx) {
  * \note    N/A
  *************************************************************************************
  */
+// Returns false if wrapping sRawData to pHead would overwrite bytes still referenced
+// by a queued NAL's slice bit-reader, indicating the wrap is unsafe.
+static bool RawDataWrapIsClean (PWelsDecoderContext pCtx, int32_t iNewBytes) {
+  const PAccessUnit pAu = pCtx->pAccessUnitList;
+  if (pAu == NULL || pAu->pNalUnitsList == NULL || pAu->uiAvailUnitsNum == 0) return true;
+  const uint8_t* pHead = pCtx->sRawData.pHead;
+  for (uint32_t i = 0; i < pAu->uiAvailUnitsNum; ++i) {
+    const PNalUnit pNal = pAu->pNalUnitsList[i];
+    if (pNal == NULL) continue;
+    const uint8_t* pStart = pNal->sNalData.sVclNal.sSliceBitsRead.pStartBuf;
+    if (pStart != NULL && pStart >= pHead && pStart < pHead + iNewBytes) return false;
+  }
+  return true;
+}
+
 int32_t WelsDecodeBs (PWelsDecoderContext pCtx, const uint8_t* kpBsBuf, const int32_t kiBsLen,
                       uint8_t** ppDst, SBufferInfo* pDstBufInfo, SParserBsInfo* pDstBsInfo) {
   if (!pCtx->bEndOfStreamFlag) {
@@ -766,6 +783,10 @@ int32_t WelsDecodeBs (PWelsDecoderContext pCtx, const uint8_t* kpBsBuf, const in
     iSrcLength = kiBsLen - iOffset;
 
     if ((kiBsLen + 4) > (pRawData->pEnd - pRawData->pCurPos)) {
+      if (!RawDataWrapIsClean (pCtx, kiBsLen + 4)) {
+        pCtx->iErrorCode |= dsOutOfMemory;
+        return pCtx->iErrorCode;
+      }
       pRawData->pCurPos = pRawData->pHead;
     }
 
@@ -852,6 +873,10 @@ int32_t WelsDecodeBs (PWelsDecoderContext pCtx, const uint8_t* kpBsBuf, const in
 
           pDstNal += (iDstIdx + 4); //init, increase 4 reserved zero bytes, used to store the next NAL
           if ((iSrcLength - iSrcConsumed + 4) > (pRawData->pEnd - pDstNal)) {
+            if (!RawDataWrapIsClean (pCtx, iSrcLength - iSrcConsumed + 4)) {
+              pCtx->iErrorCode |= dsOutOfMemory;
+              return pCtx->iErrorCode;
+            }
             pDstNal = pRawData->pCurPos = pRawData->pHead;
           } else {
             pRawData->pCurPos = pDstNal;
