@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_OPENJPH_PATH = $${PWD}/OpenJPH-0.27.3
+THIRDPARTY_OPENJPH_PATH = $${PWD}/OpenJPH-0.32.0
 THIRDPARTY_OPENJPH_INCLUDE_PATH = $${PWD}/include
 THIRDPARTY_OPENJPH_CONFIG_PATH = $${PWD}/config
 
@@ -21,7 +21,7 @@ INCLUDEPATH = $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph $${INCLUDEPATH}
 
 DEFINES += OJPH_DISABLE_SIMD
 
-# find ./src/core -name '*.cpp' -o -name '*.c' | LANG=C sort | egrep -v '(_sse|_avx|_ssse3|_wasm)' | sed 's|^\.|    $${THIRDPARTY_OPENJPH_PATH}| ; s|$| \\|'
+# find ./src/core -name '*.cpp' -o -name '*.c' | LANG=C sort | egrep -v '(_sse|_avx|_ssse3|_wasm|_vsx)' | sed 's|^\.|    $${THIRDPARTY_OPENJPH_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/codestream/ojph_codeblock.cpp \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/codestream/ojph_codeblock_fun.cpp \
@@ -62,6 +62,7 @@ HEADERS += \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/coding/ojph_block_common.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/coding/ojph_block_decoder.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/coding/ojph_block_encoder.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/coding/ojph_block_encoder_avx2_apple.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/coding/table0.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/coding/table1.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_arch.h \
@@ -74,6 +75,7 @@ HEADERS += \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_message.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_params.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_version.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/shared/ojph_simd_vsx.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/transform/ojph_colour.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/transform/ojph_colour_local.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/transform/ojph_transform.h \
