@@ -6,17 +6,17 @@
     <message>
         <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="195"/>
         <source>Translators can write copyrights or notes for about window here</source>
-        <translation type="unfinished"></translation>
+        <translation>Penerjemah: trokute</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="896"/>
         <source>About</source>
-        <translation type="unfinished">Tentang</translation>
+        <translation>Tentang</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="913"/>
         <source>License</source>
-        <translation type="unfinished">Lisensi</translation>
+        <translation>Lisensi</translation>
     </message>
 </context>
 <context>
@@ -24,12 +24,12 @@
     <message>
         <location filename="../../src/GUI/MainWindow/ImageViewerWidget.cpp" line="229"/>
         <source>Next</source>
-        <translation type="unfinished">Selanjutnya</translation>
+        <translation>Selanjutnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ImageViewerWidget.cpp" line="238"/>
         <source>Previous</source>
-        <translation type="unfinished">Sebelumnya</translation>
+        <translation>Sebelumnya</translation>
     </message>
 </context>
 <context>
@@ -37,32 +37,32 @@
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="39"/>
         <source>%1 B</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 B</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="40"/>
         <source>%1 KiB</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 KiB</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="41"/>
         <source>%1 MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 MiB</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="42"/>
         <source>%1 GiB</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 GiB</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="43"/>
         <source>%1 TiB</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 TiB</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="81"/>
         <source>Image Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informasi Gambar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="93"/>
@@ -76,72 +76,72 @@
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="144"/>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="152"/>
         <source>General Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Info Umum</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="94"/>
         <source>File Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nama Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="102"/>
         <source>Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolusi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="108"/>
         <source>Decoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Dekoder</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="114"/>
         <source>File Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukuran Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="120"/>
         <source>Created</source>
-        <translation type="unfinished"></translation>
+        <translation>Dibuat</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="126"/>
         <source>Last Modified</source>
-        <translation type="unfinished"></translation>
+        <translation>Terakhir Diubah</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="133"/>
         <source>Owner</source>
-        <translation type="unfinished"></translation>
+        <translation>Pemilik</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="139"/>
         <source>Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Grup</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="145"/>
         <source>Permissions</source>
-        <translation type="unfinished"></translation>
+        <translation>Izin</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="153"/>
         <source>Absolute Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Jalur Absolut</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog_p.h" line="52"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipe</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog_p.h" line="53"/>
         <source>Tag</source>
-        <translation type="unfinished"></translation>
+        <translation>Tag</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog_p.h" line="54"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Nilai</translation>
     </message>
 </context>
 <context>
@@ -149,229 +149,229 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="891"/>
         <source>Previous</source>
-        <translation type="unfinished">Sebelumnya</translation>
+        <translation>Sebelumnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="892"/>
         <source>Previous</source>
         <comment>Short form of &apos;Previous&apos;</comment>
-        <translation type="unfinished">Sebelumnya</translation>
+        <translation>Sebelumnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="893"/>
         <source>Next</source>
-        <translation type="unfinished">Selanjutnya</translation>
+        <translation>Selanjutnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="894"/>
         <source>Next</source>
         <comment>Short form of &apos;Next&apos;</comment>
-        <translation type="unfinished">Selanjutnya</translation>
+        <translation>Selanjutnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="895"/>
         <source>Navigate</source>
         <comment>Short form of &apos;Navigate&apos;</comment>
-        <translation type="unfinished">Navigasi</translation>
+        <translation>Navigasi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="899"/>
         <source>Slideshow</source>
         <comment>Short form of &apos;Slideshow&apos;</comment>
-        <translation type="unfinished">Salindia</translation>
+        <translation>Salindia</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="903"/>
         <source>Zoom Out</source>
-        <translation type="unfinished">Perkecil</translation>
+        <translation>Perkecil</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="904"/>
         <source>Zoom Out</source>
         <comment>Short form of &apos;Zoom Out&apos;</comment>
-        <translation type="unfinished">Perkecil</translation>
+        <translation>Perkecil</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="905"/>
         <source>Zoom In</source>
-        <translation type="unfinished">Perbesar</translation>
+        <translation>Perbesar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="906"/>
         <source>Zoom In</source>
         <comment>Short form of &apos;Zoom In&apos;</comment>
-        <translation type="unfinished">Perbesar</translation>
+        <translation>Perbesar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="907"/>
         <source>Zoom</source>
         <comment>Short form of &apos;Zoom&apos;</comment>
-        <translation type="unfinished"></translation>
+        <translation>Perbesar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="911"/>
         <source>Fit Image To Window Size</source>
-        <translation type="unfinished">Paskan Citra Ke Ukuran Jendela</translation>
+        <translation>Paskan Citra Ke Ukuran Jendela</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="912"/>
         <source>Fit</source>
         <comment>Short form of &apos;Fit Image To Window Size&apos;</comment>
-        <translation type="unfinished">Paskan</translation>
+        <translation>Paskan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="917"/>
         <source>Original Size</source>
-        <translation type="unfinished">Ukuran Sebenarnya</translation>
+        <translation>Ukuran Sebenarnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="918"/>
         <source>1:1</source>
         <comment>Short form of &apos;Original Size&apos;</comment>
-        <translation type="unfinished"></translation>
+        <translation>1:1</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="923"/>
         <source>Full Screen</source>
-        <translation type="unfinished">Layar Penuh</translation>
+        <translation>Layar Penuh</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="924"/>
         <source>Full Screen</source>
         <comment>Short form of &apos;Full Screen&apos;</comment>
-        <translation type="unfinished">Layar Penuh</translation>
+        <translation>Layar Penuh</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="929"/>
         <source>Rotate Counterclockwise</source>
-        <translation type="unfinished">Putar Berlawanan Arah Jarum Jam</translation>
+        <translation>Putar Berlawanan Arah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="930"/>
         <source>Rotate Counterclockwise</source>
         <comment>Short form of &apos;Rotate Counterclockwise&apos;</comment>
-        <translation type="unfinished">Putar Berlawanan Arah Jarum Jam</translation>
+        <translation>Putar Berlawanan Arah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="931"/>
         <source>Rotate Clockwise</source>
-        <translation type="unfinished">Putar Searah Jarum Jam</translation>
+        <translation>Putar Searah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="932"/>
         <source>Rotate Clockwise</source>
         <comment>Short form of &apos;Rotate Clockwise&apos;</comment>
-        <translation type="unfinished">Putar Searah Jarum Jam</translation>
+        <translation>Putar Searah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="933"/>
         <source>Rotate</source>
         <comment>Short form of &apos;Rotate&apos;</comment>
-        <translation type="unfinished">Putar</translation>
+        <translation>Putar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="937"/>
         <source>Flip Horizontal</source>
-        <translation type="unfinished">Balikkan Mendatar</translation>
+        <translation>Balikkan Mendatar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="938"/>
         <source>Flip Horizontal</source>
         <comment>Short form of &apos;Flip Horizontal&apos;</comment>
-        <translation type="unfinished">Balikkan Mendatar</translation>
+        <translation>Balikkan Mendatar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="939"/>
         <source>Flip Vertical</source>
-        <translation type="unfinished">Balikkan Tegak</translation>
+        <translation>Balikkan Tegak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="940"/>
         <source>Flip Vertical</source>
         <comment>Short form of &apos;Flip Vertical&apos;</comment>
-        <translation type="unfinished">Balikkan Tegak</translation>
+        <translation>Balikkan Tegak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="941"/>
         <source>Flip</source>
         <comment>Short form of &apos;Flip&apos;</comment>
-        <translation type="unfinished">Balikkan</translation>
+        <translation>Balikkan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="945"/>
         <source>Open File</source>
-        <translation type="unfinished">Buka Berkas</translation>
+        <translation>Buka Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="946"/>
         <source>Open</source>
         <comment>Short form of &apos;Open File&apos;</comment>
-        <translation type="unfinished">Buka</translation>
+        <translation>Buka</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="950"/>
         <source>Save File As</source>
-        <translation type="unfinished">Simpan Berkas Sebagai</translation>
+        <translation>Simpan Berkas Sebagai</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="951"/>
         <source>Save</source>
         <comment>Short form of &apos;Save File As&apos;</comment>
-        <translation type="unfinished">Simpan Sebagai</translation>
+        <translation>Simpan Sebagai</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="955"/>
         <source>Delete File</source>
-        <translation type="unfinished">Hapus Berkas</translation>
+        <translation>Hapus Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="956"/>
         <source>Delete</source>
         <comment>Short form of &apos;Delete File&apos;</comment>
-        <translation type="unfinished">Hapus</translation>
+        <translation>Hapus</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="960"/>
         <source>Print</source>
-        <translation type="unfinished"></translation>
+        <translation>Cetak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="961"/>
         <source>Print</source>
         <comment>Short form of &apos;Print&apos;</comment>
-        <translation type="unfinished"></translation>
+        <translation>Cetak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="965"/>
         <source>Preferences</source>
-        <translation type="unfinished">Preferensi</translation>
+        <translation>Preferensi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="966"/>
         <source>Preferences</source>
         <comment>Short form of &apos;Preferences&apos;</comment>
-        <translation type="unfinished">Preferensi</translation>
+        <translation>Preferensi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="970"/>
         <source>Quit</source>
-        <translation type="unfinished">Keluar</translation>
+        <translation>Keluar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="971"/>
         <source>Quit</source>
         <comment>Short form of &apos;Quit&apos;</comment>
-        <translation type="unfinished">Keluar</translation>
+        <translation>Keluar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="990"/>
         <source>Start Slideshow</source>
-        <translation type="unfinished">Mulai Pertunjukan Salindia</translation>
+        <translation>Mulai Pertunjukan Salindia</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="996"/>
         <source>Stop Slideshow</source>
-        <translation type="unfinished">Hentikan Pertunjukan Salindia</translation>
+        <translation>Hentikan Pertunjukan Salindia</translation>
     </message>
 </context>
 <context>
@@ -379,72 +379,72 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="514"/>
         <source>Navigate</source>
-        <translation type="unfinished">Navigasi</translation>
+        <translation>Navigasi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="515"/>
         <source>Slideshow</source>
-        <translation type="unfinished">Salindia</translation>
+        <translation>Salindia</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="516"/>
         <source>Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Perbesar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="517"/>
         <source>Fit Image To Window Size</source>
-        <translation type="unfinished">Paskan Citra Ke Ukuran Jendela</translation>
+        <translation>Paskan Citra Ke Ukuran Jendela</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="518"/>
         <source>Original Size</source>
-        <translation type="unfinished">Ukuran Sebenarnya</translation>
+        <translation>Ukuran Sebenarnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="519"/>
         <source>Full Screen</source>
-        <translation type="unfinished">Layar Penuh</translation>
+        <translation>Layar Penuh</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="520"/>
         <source>Rotate</source>
-        <translation type="unfinished">Putar</translation>
+        <translation>Putar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="521"/>
         <source>Flip</source>
-        <translation type="unfinished">Balikkan</translation>
+        <translation>Balikkan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="522"/>
         <source>Open File</source>
-        <translation type="unfinished">Buka Berkas</translation>
+        <translation>Buka Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="523"/>
         <source>Save File As</source>
-        <translation type="unfinished">Simpan Berkas Sebagai</translation>
+        <translation>Simpan Berkas Sebagai</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="524"/>
         <source>Delete File</source>
-        <translation type="unfinished">Hapus Berkas</translation>
+        <translation>Hapus Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="525"/>
         <source>Print</source>
-        <translation type="unfinished"></translation>
+        <translation>Cetak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="526"/>
         <source>Preferences</source>
-        <translation type="unfinished">Preferensi</translation>
+        <translation>Preferensi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="527"/>
         <source>Quit</source>
-        <translation type="unfinished">Keluar</translation>
+        <translation>Keluar</translation>
     </message>
 </context>
 <context>
@@ -452,29 +452,29 @@
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="165"/>
         <source>All Supported Images</source>
-        <translation type="unfinished">Semua Citra Yang Didukung</translation>
+        <translation>Semua Citra Yang Didukung</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="166"/>
         <source>All Files</source>
-        <translation type="unfinished">Semua Berkas</translation>
+        <translation>Semua Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="167"/>
         <source>Open File</source>
-        <translation type="unfinished">Buka Berkas</translation>
+        <translation>Buka Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="179"/>
         <location filename="../../src/GUI/MainController.cpp" line="367"/>
         <location filename="../../src/GUI/MainController.cpp" line="430"/>
         <source>Failed to open file &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Gagal membuka berkas "%1"</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="180"/>
         <source>Failed to open files &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Gagal membuka berkas "%1"</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="181"/>
@@ -484,32 +484,32 @@
         <location filename="../../src/GUI/MainController.cpp" line="367"/>
         <location filename="../../src/GUI/MainController.cpp" line="430"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Galat</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="189"/>
         <source>Open Folder</source>
-        <translation type="unfinished">Pilih Folder</translation>
+        <translation>Pilih Folder</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="194"/>
         <source>Failed to open folder &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Gagal membuka folder "%1"</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="206"/>
         <source>Delete File</source>
-        <translation type="unfinished">Hapus Berkas</translation>
+        <translation>Hapus Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="206"/>
         <source>Are you sure you want to delete current file?</source>
-        <translation type="unfinished"></translation>
+        <translation>Apakah Anda yakin ingin menghapus berkas saat ini?</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="224"/>
         <source>Failed to delete file &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Gagal menghapus berkas "%1"</translation>
     </message>
 </context>
 <context>
@@ -517,22 +517,22 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="376"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Galat</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="390"/>
         <source>…</source>
-        <translation type="unfinished"></translation>
+        <translation>…</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="531"/>
         <source>Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Perbesar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="532"/>
         <source>Zoom Factor (%):</source>
-        <translation type="unfinished"></translation>
+        <translation>Faktor Perbesaran (%):</translation>
     </message>
 </context>
 <context>
@@ -540,182 +540,182 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
         <source>&amp;File</source>
-        <translation type="unfinished">&amp;Berkas</translation>
+        <translation>&amp;Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished">S&amp;unting</translation>
+        <translation>S&amp;unting</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
         <source>&amp;View</source>
-        <translation type="unfinished">&amp;Tampilan</translation>
+        <translation>&amp;Tampilan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
         <source>&amp;Help</source>
-        <translation type="unfinished">Ba&amp;ntuan</translation>
+        <translation>Ba&amp;ntuan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
         <source>&amp;Reopen With</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Buka Ulang Dengan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
         <source>&amp;Open File</source>
-        <translation type="unfinished">&amp;Buka Berkas</translation>
+        <translation>&amp;Buka Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
         <source>Open &amp;Folder</source>
-        <translation type="unfinished">Pilih &amp;Folder</translation>
+        <translation>Pilih &amp;Folder</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
         <source>&amp;Save As</source>
-        <translation type="unfinished">&amp;Simpan Sebagai</translation>
+        <translation>&amp;Simpan Sebagai</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
         <source>New &amp;Window</source>
-        <translation type="unfinished">Buka dalam &amp;Jendela Baru</translation>
+        <translation>Buka dalam &amp;Jendela Baru</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
         <source>Pre&amp;vious</source>
-        <translation type="unfinished">Sebe&amp;lumnya</translation>
+        <translation>Sebe&amp;lumnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
         <source>&amp;Next</source>
-        <translation type="unfinished">Sela&amp;njutnya</translation>
+        <translation>Sela&amp;njutnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
         <source>Image &amp;Information</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Informasi Gambar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
         <source>&amp;Print</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cetak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
         <source>Pr&amp;eferences</source>
-        <translation type="unfinished">Pr&amp;eferensi</translation>
+        <translation>Pr&amp;eferensi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
         <source>&amp;Quit</source>
-        <translation type="unfinished">&amp;Keluar</translation>
+        <translation>&amp;Keluar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="329"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished">&amp;Salin</translation>
+        <translation>&amp;Salin</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="330"/>
         <source>Copy &amp;Path</source>
-        <translation type="unfinished">Salin &amp;Path</translation>
+        <translation>Salin &amp;Path</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="331"/>
         <source>&amp;Rotate Counterclockwise</source>
-        <translation type="unfinished">Putar &amp;Berlawanan Arah Jarum Jam</translation>
+        <translation>Putar &amp;Berlawanan Arah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="332"/>
         <source>Rotate Clock&amp;wise</source>
-        <translation type="unfinished">Putar Searah &amp;Jarum Jam</translation>
+        <translation>Putar Searah &amp;Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="333"/>
         <source>Flip &amp;Horizontal</source>
-        <translation type="unfinished">Balikkan &amp;Mendatar</translation>
+        <translation>Balikkan &amp;Mendatar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="334"/>
         <source>Flip &amp;Vertical</source>
-        <translation type="unfinished">Balikkan &amp;Tegak</translation>
+        <translation>Balikkan &amp;Tegak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="335"/>
         <source>&amp;Delete File</source>
-        <translation type="unfinished">&amp;Hapus Berkas</translation>
+        <translation>&amp;Hapus Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="336"/>
         <source>Zoom &amp;Out</source>
-        <translation type="unfinished">Per&amp;kecil</translation>
+        <translation>Per&amp;kecil</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="337"/>
         <source>Zoom &amp;In</source>
-        <translation type="unfinished">Per&amp;besar</translation>
+        <translation>Per&amp;besar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="338"/>
         <source>&amp;Reset Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Atur Ulang Perbesaran</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="339"/>
         <source>&amp;Zoom…</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Perbesar…</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="340"/>
         <source>Fit Image To &amp;Window Size</source>
-        <translation type="unfinished">Paskan Citra Ke Ukuran &amp;Jendela</translation>
+        <translation>Paskan Citra Ke Ukuran &amp;Jendela</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="341"/>
         <source>Original &amp;Size</source>
-        <translation type="unfinished">Ukuran &amp;Sebenarnya</translation>
+        <translation>Ukuran &amp;Sebenarnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="342"/>
         <source>&amp;Full Screen</source>
-        <translation type="unfinished">&amp;Layar Penuh</translation>
+        <translation>&amp;Layar Penuh</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="343"/>
         <source>Show &amp;Menu Bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Tampilkan Bilah &amp;Menu</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="344"/>
         <source>Show &amp;Toolbar</source>
-        <translation type="unfinished">Tampilkan/sembunyikan bilah &amp;alat</translation>
+        <translation>Tampilkan/sembunyikan bilah &amp;alat</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="345"/>
         <source>&amp;About</source>
-        <translation type="unfinished">Tent&amp;ang</translation>
+        <translation>Tent&amp;ang</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="346"/>
         <source>About &amp;Qt</source>
-        <translation type="unfinished">Tentang &amp;Qt</translation>
+        <translation>Tentang &amp;Qt</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="347"/>
         <source>Check for &amp;Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Periksa &amp;Pembaruan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="394"/>
         <source>Start S&amp;lideshow</source>
-        <translation type="unfinished">Mulai Pertunjukan S&amp;alindia</translation>
+        <translation>Mulai Pertunjukan S&amp;alindia</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="400"/>
         <source>Stop S&amp;lideshow</source>
-        <translation type="unfinished">Hentikan Pertunjukan S&amp;alindia</translation>
+        <translation>Hentikan Pertunjukan S&amp;alindia</translation>
     </message>
 </context>
 <context>
@@ -724,408 +724,408 @@
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="372"/>
         <source>Print</source>
         <comment>Title</comment>
-        <translation type="unfinished"></translation>
+        <translation>Cetak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="378"/>
         <source>Millimeters (mm)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished"></translation>
+        <translation>Milimeter (mm)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="379"/>
         <source>Points (pt)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished">Poin (pt)</translation>
+        <translation>Poin (pt)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="380"/>
         <source>Inches (in)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished"></translation>
+        <translation>Inci (in)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="381"/>
         <source>Pica (P̸)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished"></translation>
+        <translation>Pica (P̸)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="382"/>
         <source>Didot (DD)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished"></translation>
+        <translation>Didot (DD)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="383"/>
         <source>Cicero (CC)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished"></translation>
+        <translation>Cicero (CC)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="402"/>
         <source>Pixels/Millimeter</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Piksel/Millimeter</translation>
+        <translation>Piksel/Millimeter</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="403"/>
         <source>Pixels/Point</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Piksel/Poin</translation>
+        <translation>Piksel/Poin</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="404"/>
         <source>Pixels/Inch</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Piksel/Inch</translation>
+        <translation>Piksel/Inch</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="405"/>
         <source>Pixels/Pica</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Piksel/Pica</translation>
+        <translation>Piksel/Pica</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="406"/>
         <source>Pixels/Didot</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Piksel/Didot</translation>
+        <translation>Piksel/Didot</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="407"/>
         <source>Pixels/Cicero</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Piksel/Cicero</translation>
+        <translation>Piksel/Cicero</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="412"/>
         <source>None</source>
         <comment>Centering option</comment>
-        <translation type="unfinished">Tidak ada</translation>
+        <translation>Tidak ada</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="413"/>
         <source>Horizontally</source>
         <comment>Centering option</comment>
-        <translation type="unfinished"></translation>
+        <translation>Horizontal</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="414"/>
         <source>Vertically</source>
         <comment>Centering option</comment>
-        <translation type="unfinished"></translation>
+        <translation>Vertikal</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="415"/>
         <source>Both</source>
         <comment>Centering option</comment>
-        <translation type="unfinished"></translation>
+        <translation>Keduanya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="710"/>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="894"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Galat</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="711"/>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="895"/>
         <source>Invalid Paper Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukuran Kertas Tidak Valid</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1233"/>
         <source>Yes</source>
         <comment>Default</comment>
-        <translation type="unfinished"></translation>
+        <translation>Ya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1235"/>
         <source>No</source>
         <comment>Default</comment>
-        <translation type="unfinished"></translation>
+        <translation>Tidak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1239"/>
         <source>Yes</source>
         <comment>Remote</comment>
-        <translation type="unfinished"></translation>
+        <translation>Ya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1241"/>
         <source>No</source>
         <comment>Remote</comment>
-        <translation type="unfinished"></translation>
+        <translation>Tidak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1265"/>
         <source>Idle</source>
         <comment>State</comment>
-        <translation type="unfinished"></translation>
+        <translation>Menganggur</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1268"/>
         <source>Active</source>
         <comment>State</comment>
-        <translation type="unfinished"></translation>
+        <translation>Aktif</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1271"/>
         <source>Aborted</source>
         <comment>State</comment>
-        <translation type="unfinished"></translation>
+        <translation>Dibatalkan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1274"/>
         <source>Error</source>
         <comment>State</comment>
-        <translation type="unfinished"></translation>
+        <translation>Galat</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1277"/>
         <source>Unknown (%1)</source>
         <comment>State</comment>
-        <translation type="unfinished"></translation>
+        <translation>Tidak Diketahui (%1)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1320"/>
         <source>Color</source>
         <comment>Color mode</comment>
-        <translation type="unfinished"></translation>
+        <translation>Warna</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1322"/>
         <source>Grayscale</source>
         <comment>Color mode</comment>
-        <translation type="unfinished"></translation>
+        <translation>Skala Abu-abu</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="992"/>
         <source>Printer</source>
-        <translation type="unfinished"></translation>
+        <translation>Pencetak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="993"/>
         <source>…</source>
-        <translation type="unfinished"></translation>
+        <translation>…</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="994"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nama:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="995"/>
         <source>Description:</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskripsi:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="996"/>
         <source>Default:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bawaan:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="997"/>
         <source>Remote:</source>
-        <translation type="unfinished"></translation>
+        <translation>Jarak Jauh:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="998"/>
         <source>Location:</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokasi:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="999"/>
         <source>Make and model:</source>
-        <translation type="unfinished"></translation>
+        <translation>Merek dan model:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1000"/>
         <source>State:</source>
-        <translation type="unfinished"></translation>
+        <translation>Status:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1002"/>
         <source>Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Halaman</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1003"/>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Potret</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1004"/>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Lanskap</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1005"/>
         <source>Auto-Rotate</source>
-        <translation type="unfinished"></translation>
+        <translation>Putar Otomatis</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1006"/>
         <source>Page Setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Pengaturan Halaman</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1008"/>
         <source>Misc</source>
-        <translation type="unfinished"></translation>
+        <translation>Lain-lain</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1009"/>
         <source>Copies:</source>
-        <translation type="unfinished">Rangkap:</translation>
+        <translation>Rangkap:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1010"/>
         <source>Color Mode:</source>
-        <translation type="unfinished"></translation>
+        <translation>Mode Warna:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1012"/>
         <source>Size</source>
-        <translation type="unfinished">Ukuran</translation>
+        <translation>Ukuran</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1013"/>
         <source>Width:</source>
-        <translation type="unfinished"></translation>
+        <translation>Lebar:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1014"/>
         <source>Height:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tinggi:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1015"/>
         <source>X Resolution:</source>
-        <translation type="unfinished">Resolusi X:</translation>
+        <translation>Resolusi X:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1016"/>
         <source>Y Resolution:</source>
-        <translation type="unfinished">Resolusi Y:</translation>
+        <translation>Resolusi Y:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1017"/>
         <source>Load Defaults</source>
-        <translation type="unfinished"></translation>
+        <translation>Muat Bawaan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1029"/>
         <source>Position</source>
-        <translation type="unfinished">Posisi</translation>
+        <translation>Posisi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1030"/>
         <source>Left:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kiri:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1031"/>
         <source>Right:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanan:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1032"/>
         <source>Top:</source>
-        <translation type="unfinished"></translation>
+        <translation>Atas:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1033"/>
         <source>Bottom:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bawah:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1034"/>
         <source>Center:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tengah:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1036"/>
         <source>Ignore Page Margins</source>
-        <translation type="unfinished"></translation>
+        <translation>Abaikan Margin Halaman</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1037"/>
         <source>Ignore Paper Bounds</source>
-        <translation type="unfinished"></translation>
+        <translation>Abaikan Batas Kertas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1039"/>
         <source>Preview</source>
-        <translation type="unfinished">Lihat Contoh Jadi</translation>
+        <translation>Lihat Contoh Jadi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1041"/>
         <source>Effects</source>
         <comment>Effects</comment>
-        <translation type="unfinished"></translation>
+        <translation>Efek</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1042"/>
         <source>Brightness:</source>
         <comment>Effects</comment>
-        <translation type="unfinished"></translation>
+        <translation>Kecerahan:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1043"/>
         <source>Contrast:</source>
         <comment>Effects</comment>
-        <translation type="unfinished"></translation>
+        <translation>Kontras:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1044"/>
         <source>Exposure:</source>
         <comment>Effects</comment>
-        <translation type="unfinished"></translation>
+        <translation>Eksposur:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1045"/>
         <source>Grayscale</source>
         <comment>Effects</comment>
-        <translation type="unfinished"></translation>
+        <translation>Skala Abu-abu</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1046"/>
         <source>Use Legacy Rendering Algorithm</source>
         <comment>Effects</comment>
-        <translation type="unfinished"></translation>
+        <translation>Gunakan Algoritme Rendering Lama</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1048"/>
         <source>Preview</source>
         <comment>Effects</comment>
-        <translation type="unfinished">Lihat Contoh Jadi</translation>
+        <translation>Lihat Contoh Jadi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1050"/>
         <source>General</source>
-        <translation type="unfinished">Lihat Contoh Jadi</translation>
+        <translation>Lihat Contoh Jadi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1051"/>
         <source>Image Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Pengaturan Gambar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1052"/>
         <source>Effects</source>
-        <translation type="unfinished"></translation>
+        <translation>Efek</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1054"/>
         <source>Print</source>
-        <translation type="unfinished"></translation>
+        <translation>Cetak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1055"/>
         <source>Cancel</source>
-        <translation type="unfinished">Batal</translation>
+        <translation>Batal</translation>
     </message>
 </context>
 <context>
@@ -1133,194 +1133,194 @@
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="96"/>
         <source>Previous</source>
-        <translation type="unfinished">Sebelumnya</translation>
+        <translation>Sebelumnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="97"/>
         <source>Previous</source>
         <comment>Short form of &apos;Previous&apos;</comment>
-        <translation type="unfinished">Sebelumnya</translation>
+        <translation>Sebelumnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="98"/>
         <source>Next</source>
-        <translation type="unfinished">Selanjutnya</translation>
+        <translation>Selanjutnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="99"/>
         <source>Next</source>
         <comment>Short form of &apos;Next&apos;</comment>
-        <translation type="unfinished">Selanjutnya</translation>
+        <translation>Selanjutnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="100"/>
         <source>Slideshow</source>
         <comment>Short form of &apos;Slideshow&apos;</comment>
-        <translation type="unfinished">Salindia</translation>
+        <translation>Salindia</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="101"/>
         <source>Zoom Out</source>
-        <translation type="unfinished">Perkecil</translation>
+        <translation>Perkecil</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="102"/>
         <source>Zoom Out</source>
         <comment>Short form of &apos;Zoom Out&apos;</comment>
-        <translation type="unfinished">Perkecil</translation>
+        <translation>Perkecil</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="103"/>
         <source>Zoom In</source>
-        <translation type="unfinished">Perbesar</translation>
+        <translation>Perbesar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="104"/>
         <source>Zoom In</source>
         <comment>Short form of &apos;Zoom In&apos;</comment>
-        <translation type="unfinished">Perbesar</translation>
+        <translation>Perbesar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="105"/>
         <source>Fit Image To Window Size</source>
-        <translation type="unfinished">Paskan Citra Ke Ukuran Jendela</translation>
+        <translation>Paskan Citra Ke Ukuran Jendela</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="106"/>
         <source>Fit</source>
         <comment>Short form of &apos;Fit Image To Window Size&apos;</comment>
-        <translation type="unfinished">Paskan</translation>
+        <translation>Paskan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="107"/>
         <source>Original Size</source>
-        <translation type="unfinished">Ukuran Sebenarnya</translation>
+        <translation>Ukuran Sebenarnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="108"/>
         <source>1:1</source>
         <comment>Short form of &apos;Original Size&apos;</comment>
-        <translation type="unfinished"></translation>
+        <translation>1:1</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="109"/>
         <source>Full Screen</source>
-        <translation type="unfinished">Layar Penuh</translation>
+        <translation>Layar Penuh</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="110"/>
         <source>Full Screen</source>
         <comment>Short form of &apos;Full Screen&apos;</comment>
-        <translation type="unfinished">Layar Penuh</translation>
+        <translation>Layar Penuh</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="111"/>
         <source>Rotate Counterclockwise</source>
-        <translation type="unfinished">Putar Berlawanan Arah Jarum Jam</translation>
+        <translation>Putar Berlawanan Arah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="112"/>
         <source>Rotate Counterclockwise</source>
         <comment>Short form of &apos;Rotate Counterclockwise&apos;</comment>
-        <translation type="unfinished">Putar Berlawanan Arah Jarum Jam</translation>
+        <translation>Putar Berlawanan Arah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="113"/>
         <source>Rotate Clockwise</source>
-        <translation type="unfinished">Putar Searah Jarum Jam</translation>
+        <translation>Putar Searah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="114"/>
         <source>Rotate Clockwise</source>
         <comment>Short form of &apos;Rotate Clockwise&apos;</comment>
-        <translation type="unfinished">Putar Searah Jarum Jam</translation>
+        <translation>Putar Searah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="115"/>
         <source>Flip Horizontal</source>
-        <translation type="unfinished">Balikkan Mendatar</translation>
+        <translation>Balikkan Mendatar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="116"/>
         <source>Flip Horizontal</source>
         <comment>Short form of &apos;Flip Horizontal&apos;</comment>
-        <translation type="unfinished">Balikkan Mendatar</translation>
+        <translation>Balikkan Mendatar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="117"/>
         <source>Flip Vertical</source>
-        <translation type="unfinished">Balikkan Tegak</translation>
+        <translation>Balikkan Tegak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="118"/>
         <source>Flip Vertical</source>
         <comment>Short form of &apos;Flip Vertical&apos;</comment>
-        <translation type="unfinished">Balikkan Tegak</translation>
+        <translation>Balikkan Tegak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="119"/>
         <source>Open File</source>
-        <translation type="unfinished">Buka Berkas</translation>
+        <translation>Buka Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="120"/>
         <source>Open</source>
         <comment>Short form of &apos;Open File&apos;</comment>
-        <translation type="unfinished">Buka</translation>
+        <translation>Buka</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="121"/>
         <source>Save File As</source>
-        <translation type="unfinished">Simpan Berkas Sebagai</translation>
+        <translation>Simpan Berkas Sebagai</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="122"/>
         <source>Save</source>
         <comment>Short form of &apos;Save File As&apos;</comment>
-        <translation type="unfinished">Simpan Sebagai</translation>
+        <translation>Simpan Sebagai</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="123"/>
         <source>Delete File</source>
-        <translation type="unfinished">Hapus Berkas</translation>
+        <translation>Hapus Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="124"/>
         <source>Delete</source>
         <comment>Short form of &apos;Delete File&apos;</comment>
-        <translation type="unfinished">Hapus</translation>
+        <translation>Hapus</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="125"/>
         <source>Preferences</source>
-        <translation type="unfinished">Preferensi</translation>
+        <translation>Preferensi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="126"/>
         <source>Preferences</source>
         <comment>Short form of &apos;Preferences&apos;</comment>
-        <translation type="unfinished">Preferensi</translation>
+        <translation>Preferensi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="127"/>
         <source>Quit</source>
-        <translation type="unfinished">Keluar</translation>
+        <translation>Keluar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="128"/>
         <source>Quit</source>
         <comment>Short form of &apos;Quit&apos;</comment>
-        <translation type="unfinished">Keluar</translation>
+        <translation>Keluar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="162"/>
         <source>Start Slideshow</source>
-        <translation type="unfinished">Mulai Pertunjukan Salindia</translation>
+        <translation>Mulai Pertunjukan Salindia</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="168"/>
         <source>Stop Slideshow</source>
-        <translation type="unfinished">Hentikan Pertunjukan Salindia</translation>
+        <translation>Hentikan Pertunjukan Salindia</translation>
     </message>
 </context>
 <context>
@@ -1329,169 +1329,169 @@
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="83"/>
         <source>Bottom</source>
         <comment>ToolBarPosition</comment>
-        <translation type="unfinished"></translation>
+        <translation>Bawah</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="84"/>
         <source>Top</source>
         <comment>ToolBarPosition</comment>
-        <translation type="unfinished"></translation>
+        <translation>Atas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="85"/>
         <source>Left</source>
         <comment>ToolBarPosition</comment>
-        <translation type="unfinished"></translation>
+        <translation>Kiri</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="86"/>
         <source>Right</source>
         <comment>ToolBarPosition</comment>
-        <translation type="unfinished"></translation>
+        <translation>Kanan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="87"/>
         <source>Floated or docked</source>
         <comment>ToolBarPosition</comment>
-        <translation type="unfinished"></translation>
+        <translation>Mengambang atau tertambat</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="166"/>
         <source>Select Background Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Pilih Warna Latar Belakang</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="204"/>
         <source>Preferences</source>
-        <translation type="unfinished">Preferensi</translation>
+        <translation>Preferensi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
         <source>General</source>
-        <translation type="unfinished">Lihat Contoh Jadi</translation>
+        <translation>Lihat Contoh Jadi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="116"/>
         <source>Interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Antarmuka</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="117"/>
         <source>Decoders</source>
-        <translation type="unfinished"></translation>
+        <translation>Dekoder</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="120"/>
         <source>Automatically check for updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Periksa pembaruan secara otomatis</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="124"/>
         <source>Ask before deleting images</source>
-        <translation type="unfinished">Tanya sebelum menghapus citra</translation>
+        <translation>Tanya sebelum menghapus citra</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="127"/>
         <source>Move deleted images to trash</source>
-        <translation type="unfinished"></translation>
+        <translation>Pindahkan gambar yang dihapus ke tempat sampah</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="131"/>
         <source>Use smooth image rendering</source>
-        <translation type="unfinished"></translation>
+        <translation>Gunakan rendering gambar yang halus</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="134"/>
         <source>Allow fit to window for small images</source>
-        <translation type="unfinished"></translation>
+        <translation>Izinkan sesuaikan ke jendela untuk gambar kecil</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="137"/>
         <source>Remember rotation and flip until app exit</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingat rotasi dan balik hingga aplikasi ditutup</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="140"/>
         <source>Start with a maximized window</source>
-        <translation type="unfinished"></translation>
+        <translation>Mulai dengan jendela yang dimaksimalkan</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="143"/>
         <source>Save window size and position</source>
-        <translation type="unfinished"></translation>
+        <translation>Simpan ukuran dan posisi jendela</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
         <source>Slideshow interval</source>
-        <translation type="unfinished">Interval salindia</translation>
+        <translation>Interval salindia</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="147"/>
         <source>sec</source>
-        <translation type="unfinished">det</translation>
+        <translation>det</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="151"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Aksi roda mouse&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="152"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
-        <translation type="unfinished"></translation>
+        <translation>Gulir</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="153"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
-        <translation type="unfinished"></translation>
+        <translation>Perbesar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="154"/>
         <source>Navigate</source>
         <comment>WheelMode</comment>
-        <translation type="unfinished">Navigasi</translation>
+        <translation>Navigasi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="197"/>
         <source>&lt;b&gt;Language&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Bahasa&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="198"/>
         <source>&lt;b&gt;Theme&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Tema&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="200"/>
         <source>&lt;b&gt;Icon Theme&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Tema Ikon&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="203"/>
         <source>&lt;b&gt;Toolbar Position&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Posisi Bilah Alat&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="206"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
-        <translation type="unfinished">&lt;b&gt;Warna latar&lt;/b&gt;</translation>
+        <translation>&lt;b&gt;Warna latar&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="207"/>
         <source>Normal:</source>
-        <translation type="unfinished">Normal:</translation>
+        <translation>Normal:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="208"/>
         <source>Fullscreen:</source>
-        <translation type="unfinished">Layar Penuh:</translation>
+        <translation>Layar Penuh:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="243"/>
         <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Dekoder yang diaktifkan:&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
@@ -1499,47 +1499,47 @@
     <message>
         <location filename="../../src/main.cpp" line="88"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation>Sistem</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="91"/>
         <source>Light</source>
-        <translation type="unfinished"></translation>
+        <translation>Terang</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="95"/>
         <source>Dark</source>
-        <translation type="unfinished"></translation>
+        <translation>Gelap</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="100"/>
         <source>Fusion</source>
-        <translation type="unfinished"></translation>
+        <translation>Fusion</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="104"/>
         <source>Fusion Light</source>
-        <translation type="unfinished"></translation>
+        <translation>Fusion Terang</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="108"/>
         <source>Fusion Dark</source>
-        <translation type="unfinished"></translation>
+        <translation>Fusion Gelap</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="113"/>
         <source>Windows</source>
-        <translation type="unfinished"></translation>
+        <translation>Windows</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="117"/>
         <source>Windows 95</source>
-        <translation type="unfinished"></translation>
+        <translation>Windows 95</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="121"/>
         <source>Windows 2000</source>
-        <translation type="unfinished"></translation>
+        <translation>Windows 2000</translation>
     </message>
 </context>
 <context>
@@ -1547,92 +1547,92 @@
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="124"/>
         <source>Previous</source>
-        <translation type="unfinished">Sebelumnya</translation>
+        <translation>Sebelumnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="125"/>
         <source>Next</source>
-        <translation type="unfinished">Selanjutnya</translation>
+        <translation>Selanjutnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="126"/>
         <source>Zoom Out</source>
-        <translation type="unfinished">Perkecil</translation>
+        <translation>Perkecil</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="127"/>
         <source>Zoom In</source>
-        <translation type="unfinished">Perbesar</translation>
+        <translation>Perbesar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="128"/>
         <source>Fit Image To Window Size</source>
-        <translation type="unfinished">Paskan Citra Ke Ukuran Jendela</translation>
+        <translation>Paskan Citra Ke Ukuran Jendela</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="129"/>
         <source>Original Size</source>
-        <translation type="unfinished">Ukuran Sebenarnya</translation>
+        <translation>Ukuran Sebenarnya</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="130"/>
         <source>Full Screen</source>
-        <translation type="unfinished">Layar Penuh</translation>
+        <translation>Layar Penuh</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="131"/>
         <source>Rotate Counterclockwise</source>
-        <translation type="unfinished">Putar Berlawanan Arah Jarum Jam</translation>
+        <translation>Putar Berlawanan Arah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="132"/>
         <source>Rotate Clockwise</source>
-        <translation type="unfinished">Putar Searah Jarum Jam</translation>
+        <translation>Putar Searah Jarum Jam</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="133"/>
         <source>Flip Horizontal</source>
-        <translation type="unfinished">Balikkan Mendatar</translation>
+        <translation>Balikkan Mendatar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="134"/>
         <source>Flip Vertical</source>
-        <translation type="unfinished">Balikkan Tegak</translation>
+        <translation>Balikkan Tegak</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="135"/>
         <source>Open File</source>
-        <translation type="unfinished">Buka Berkas</translation>
+        <translation>Buka Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="136"/>
         <source>Save File As</source>
-        <translation type="unfinished">Simpan Berkas Sebagai</translation>
+        <translation>Simpan Berkas Sebagai</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="137"/>
         <source>Delete File</source>
-        <translation type="unfinished">Hapus Berkas</translation>
+        <translation>Hapus Berkas</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="138"/>
         <source>Preferences</source>
-        <translation type="unfinished">Preferensi</translation>
+        <translation>Preferensi</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="139"/>
         <source>Quit</source>
-        <translation type="unfinished">Keluar</translation>
+        <translation>Keluar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="173"/>
         <source>Start Slideshow</source>
-        <translation type="unfinished">Mulai Pertunjukan Salindia</translation>
+        <translation>Mulai Pertunjukan Salindia</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="179"/>
         <source>Stop Slideshow</source>
-        <translation type="unfinished">Hentikan Pertunjukan Salindia</translation>
+        <translation>Hentikan Pertunjukan Salindia</translation>
     </message>
 </context>
 </TS>
