@@ -37,7 +37,7 @@ DEFINES += XML_POOR_ENTROPY XML_STATIC
 
 # find ./lib -name '*.c' | grep -v '/random_' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBEXPAT_PATH}| ; s|$| \\|'
 SOURCES += \
-    $${THIRDPARTY_LIBEXPAT_PATH}/lib/xcsinc.c \
+\ #    $${THIRDPARTY_LIBEXPAT_PATH}/lib/xcsinc.c \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/xmlparse.c \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/xmlrole.c \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/xmltok.c \
