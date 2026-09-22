@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-RESVG_VERSION="0.47.0"
+RESVG_VERSION="0.48.1"
 if [[ $(sysctl -n machdep.cpu.brand_string) =~ "Apple" ]] ; then
     RESVG_HOST="aarch64-apple-darwin"
 else
@@ -8,7 +8,7 @@ else
 fi
 export MACOSX_DEPLOYMENT_TARGET=10.12
 
-RUST_VERSION="1.87.0"
+RUST_VERSION="1.85.0"
 
 cd "$(dirname $0)"
 
