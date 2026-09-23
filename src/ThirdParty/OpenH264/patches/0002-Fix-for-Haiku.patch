@@ -1,4 +1,4 @@
-From d2e761c83909a79c29eac73c184798ace573bbf1 Mon Sep 17 00:00:00 2001
+From a629856f46454345b9f72a4e95fcf6a5ac098066 Mon Sep 17 00:00:00 2001
 From: Gerasim Troeglazov <3dEyes@gmail.com>
 Date: Thu, 1 Aug 2024 19:54:41 +1000
 Subject: [PATCH 2/2] Fix for Haiku
@@ -57,7 +57,7 @@ index 4e44f248..b11217e1 100644
  
    // There is not yet a way to determine CPU count in emscripten JS environment.
 diff --git a/meson.build b/meson.build
-index a0dfd219..2ecbe927 100644
+index 6cb55e3f..a6a56682 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -57,7 +57,7 @@ cpp_lib = '-lstdc++'
@@ -70,5 +70,5 @@ index a0dfd219..2ecbe927 100644
    asm_format64 = 'elf64'
    if ['ios', 'darwin'].contains(system)
 -- 
-2.53.0
+2.55.0
 
