@@ -19,7 +19,7 @@
 // Current internal library namespace name
 //
 #define IEX_INTERNAL_NAMESPACE_CUSTOM 0
-#define IEX_INTERNAL_NAMESPACE Iex_3_4
+#define IEX_INTERNAL_NAMESPACE Iex_3_5
 
 //
 // Current public user namespace name

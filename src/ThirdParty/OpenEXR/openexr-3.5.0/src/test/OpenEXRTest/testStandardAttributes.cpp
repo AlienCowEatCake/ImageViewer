@@ -1,0 +1,1520 @@
+//
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (c) Contributors to the OpenEXR Project.
+//
+
+#ifdef NDEBUG
+#    undef NDEBUG
+#endif
+
+#include "ImfArray.h"
+#include "ImfColorMetadata.h"
+#include "ImfFramesPerSecond.h"
+#include "ImfRgbaFile.h"
+#include "ImfStandardAttributes.h"
+
+#include <Imath/ImathRandom.h>
+
+#include <assert.h>
+#include <fstream>
+#include <iomanip>
+#include <stdio.h>
+#include <string.h>
+
+using namespace OPENEXR_IMF_NAMESPACE;
+using namespace std;
+using namespace IMATH_NAMESPACE;
+
+namespace
+{
+
+void
+convertRGBtoXYZ ()
+{
+    cout << "conversion from RGB to XYZ" << endl;
+
+    Chromaticities c;
+    float          Y  = 100;
+    M44f           M1 = RGBtoXYZ (c, Y);
+
+    V3f R1 = V3f (1, 0, 0) * M1;
+    V3f G1 = V3f (0, 1, 0) * M1;
+    V3f B1 = V3f (0, 0, 1) * M1;
+    V3f W1 = V3f (1, 1, 1) * M1;
+
+    cout << "red   XYZ = " << R1 << endl;
+    cout << "green XYZ = " << G1 << endl;
+    cout << "blue  XYZ = " << B1 << endl;
+    cout << "white XYZ = " << W1 << endl;
+
+    V2f r1 (R1.x / (R1.x + R1.y + R1.z), R1.y / (R1.x + R1.y + R1.z));
+    V2f g1 (G1.x / (G1.x + G1.y + G1.z), G1.y / (G1.x + G1.y + G1.z));
+    V2f b1 (B1.x / (B1.x + B1.y + B1.z), B1.y / (B1.x + B1.y + B1.z));
+    V2f w1 (W1.x / (W1.x + W1.y + W1.z), W1.y / (W1.x + W1.y + W1.z));
+
+    cout << "red   xy = " << r1 << endl;
+    cout << "green xy = " << g1 << endl;
+    cout << "blue  xy = " << b1 << endl;
+    cout << "white xy = " << w1 << endl;
+
+    assert (equalWithRelError (W1.y, Y, 1e-5F));
+    assert (r1.equalWithAbsError (c.red, 1e-5F));
+    assert (g1.equalWithAbsError (c.green, 1e-5F));
+    assert (b1.equalWithAbsError (c.blue, 1e-5F));
+    assert (w1.equalWithAbsError (c.white, 1e-5F));
+
+    cout << "conversion from XYZ to RGB" << endl;
+
+    M44f M2 = XYZtoRGB (c, Y);
+
+    V3f R2 = R1 * M2;
+    V3f G2 = G1 * M2;
+    V3f B2 = B1 * M2;
+    V3f W2 = W1 * M2;
+
+    cout << "red   RGB = " << R2 << endl;
+    cout << "green RGB = " << G2 << endl;
+    cout << "blue  RGB = " << B2 << endl;
+    cout << "white RGB = " << W2 << endl;
+
+    assert (R2.equalWithAbsError (V3f (1, 0, 0), 1e-3F));
+    assert (G2.equalWithAbsError (V3f (0, 1, 0), 1e-3F));
+    assert (B2.equalWithAbsError (V3f (0, 0, 1), 1e-3F));
+    assert (W2.equalWithAbsError (V3f (1, 1, 1), 1e-3F));
+}
+
+void
+writeReadChromaticities (const char fileName[])
+{
+    cout << "chromaticities attribute" << endl;
+
+    cout << "writing, ";
+
+    Chromaticities   c1 (V2f (1, 2), V2f (3, 4), V2f (5, 6), V2f (7, 8));
+    static const int W = 100;
+    static const int H = 100;
+
+    Header header (W, H);
+    assert (hasChromaticities (header) == false);
+
+    addChromaticities (header, c1);
+    assert (hasChromaticities (header) == true);
+
+    {
+        RgbaOutputFile out (fileName, header);
+        Rgba           pixels[W];
+
+        for (int i = 0; i < W; ++i)
+        {
+            pixels[i].r = 1;
+            pixels[i].g = 1;
+            pixels[i].b = 1;
+            pixels[i].a = 1;
+        }
+
+        out.setFrameBuffer (pixels, 1, 0);
+        out.writePixels (H);
+    }
+
+    cout << "reading, comparing" << endl;
+
+    {
+        RgbaInputFile         in (fileName);
+        const Chromaticities& c2 = chromaticities (in.header ());
+
+        assert (hasChromaticities (in.header ()) == true);
+        assert (c1.red == c2.red);
+        assert (c1.green == c2.green);
+        assert (c1.blue == c2.blue);
+        assert (c1.white == c2.white);
+    }
+
+    remove (fileName);
+}
+
+void
+latLongMap (const char fileName1[], const char fileName2[])
+{
+    cout << "latitude-longitude environment map" << endl;
+    const int W = 360;
+    const int H = 180;
+
+    Header header (W, H);
+    addEnvmap (header, ENVMAP_LATLONG);
+
+    V2f pos;
+
+    pos = LatLongMap::latLong (V3f (0, 1, 0));
+    assert (equalWithAbsError (pos.x, float (M_PI / 2), 1e-6f));
+
+    pos = LatLongMap::latLong (V3f (0, -1, 0));
+    assert (equalWithAbsError (pos.x, float (-M_PI / 2), 1e-6f));
+
+    pos = LatLongMap::latLong (V3f (0, 0, 1));
+    assert (pos.equalWithAbsError (V2f (0, 0), 1e-6f));
+
+    pos = LatLongMap::latLong (V3f (1, 0, 0));
+    assert (pos.equalWithAbsError (V2f (0, M_PI / 2), 1e-6f));
+
+    pos = LatLongMap::latLong (V3f (-1, 0, 0));
+    assert (pos.equalWithAbsError (V2f (0, -M_PI / 2), 1e-6f));
+
+    pos = LatLongMap::latLong (V3f (0, 1, 1));
+    assert (pos.equalWithAbsError (V2f (M_PI / 4, 0), 1e-6f));
+
+    pos = LatLongMap::latLong (V3f (0, -1, 1));
+    assert (pos.equalWithAbsError (V2f (-M_PI / 4, 0), 1e-6f));
+
+    pos =
+        LatLongMap::pixelPosition (header.dataWindow (), V2f (M_PI / 2, M_PI));
+    assert (pos.equalWithAbsError (V2f (0, 0), 1e-6f * W));
+
+    pos = LatLongMap::pixelPosition (
+        header.dataWindow (), V2f (-M_PI / 2, -M_PI));
+    assert (pos.equalWithAbsError (V2f (header.dataWindow ().max), 1e-6f * W));
+
+    Array2D<Rgba> pixels (H, W);
+
+    for (int y = 0; y < H; ++y)
+    {
+        for (int x = 0; x < W; ++x)
+        {
+            Rgba& p = pixels[y][x];
+            V3f dir = LatLongMap::direction (header.dataWindow (), V2f (x, y));
+
+            p.r = dir.x + 1;
+            p.g = dir.y + 1;
+            p.b = dir.z + 1;
+        }
+    }
+
+    {
+        RgbaOutputFile out (fileName1, header, WRITE_RGB);
+        out.setFrameBuffer (&pixels[0][0], 1, W);
+        out.writePixels (H);
+    }
+
+    Rand48 rand (0);
+
+    for (int i = 0; i < W * H * 3; ++i)
+    {
+        V3f dir = hollowSphereRand<V3f> (rand);
+        V2f pos = LatLongMap::pixelPosition (header.dataWindow (), dir);
+
+        Rgba& p = pixels[int (pos.y + 0.5)][int (pos.x + 0.5)];
+
+        p.r = (dir.x + 1) * 0.8;
+        p.g = (dir.y + 1) * 0.8;
+        p.b = (dir.z + 1) * 0.8;
+
+        V3f dir1 = LatLongMap::direction (header.dataWindow (), pos);
+        assert (dir.equalWithAbsError (dir1.normalized (), 1e-5f));
+    }
+
+    {
+        RgbaOutputFile out (fileName2, header, WRITE_RGB);
+        out.setFrameBuffer (&pixels[0][0], 1, W);
+        out.writePixels (H);
+    }
+
+    remove (fileName1);
+    remove (fileName2);
+}
+
+void
+cubeMap (const char fileName1[], const char fileName2[])
+{
+    cout << "cube environment map" << endl;
+    const int N = 128;
+    const int W = N;
+    const int H = N * 6;
+
+    Header header (W, H);
+    addEnvmap (header, ENVMAP_CUBE);
+
+    int sof = CubeMap::sizeOfFace (header.dataWindow ());
+
+    assert (sof == N);
+
+    for (int face1 = 0; face1 < 6; ++face1)
+    {
+        Box2i dw1 = CubeMap::dataWindowForFace (
+            CubeMapFace (face1), header.dataWindow ());
+
+        assert (dw1.max.x - dw1.min.x == sof - 1);
+        assert (dw1.max.y - dw1.min.y == sof - 1);
+        assert (header.dataWindow ().intersects (dw1.min));
+        assert (header.dataWindow ().intersects (dw1.max));
+
+        for (int face2 = face1 + 1; face2 < 6; ++face2)
+        {
+            Box2i dw2 = CubeMap::dataWindowForFace (
+                CubeMapFace (face2), header.dataWindow ());
+            assert (!dw1.intersects (dw2));
+        }
+    }
+
+    CubeMapFace face;
+    V2f         pos;
+
+    CubeMap::faceAndPixelPosition (
+        V3f (1, 0, 0), header.dataWindow (), face, pos);
+
+    assert (face == CUBEFACE_POS_X);
+    assert (pos.equalWithAbsError (V2f ((sof - 1), (sof - 1)) / 2, 1e-6 * W));
+
+    CubeMap::faceAndPixelPosition (
+        V3f (-1, 0, 0), header.dataWindow (), face, pos);
+
+    assert (face == CUBEFACE_NEG_X);
+    assert (pos.equalWithAbsError (V2f ((sof - 1), (sof - 1)) / 2, 1e-6 * W));
+
+    CubeMap::faceAndPixelPosition (
+        V3f (0, 1, 0), header.dataWindow (), face, pos);
+
+    assert (face == CUBEFACE_POS_Y);
+    assert (pos.equalWithAbsError (V2f ((sof - 1), (sof - 1)) / 2, 1e-6 * W));
+
+    CubeMap::faceAndPixelPosition (
+        V3f (0, -1, 0), header.dataWindow (), face, pos);
+
+    assert (face == CUBEFACE_NEG_Y);
+    assert (pos.equalWithAbsError (V2f ((sof - 1), (sof - 1)) / 2, 1e-6 * W));
+
+    CubeMap::faceAndPixelPosition (
+        V3f (0, 0, 1), header.dataWindow (), face, pos);
+
+    assert (face == CUBEFACE_POS_Z);
+    assert (pos.equalWithAbsError (V2f ((sof - 1), (sof - 1)) / 2, 1e-6 * W));
+
+    CubeMap::faceAndPixelPosition (
+        V3f (0, 0, -1), header.dataWindow (), face, pos);
+
+    assert (face == CUBEFACE_NEG_Z);
+    assert (pos.equalWithAbsError (V2f ((sof - 1), (sof - 1)) / 2, 1e-6 * W));
+
+    Array2D<Rgba> pixels (H, W);
+
+    for (int y = 0; y < H; ++y)
+    {
+        for (int x = 0; x < W; ++x)
+        {
+            Rgba& p = pixels[y][x];
+            p.r = p.g = p.b = 0;
+        }
+    }
+
+    for (int face = 0; face < 6; ++face)
+    {
+        for (int y = 0; y < sof; ++y)
+        {
+            for (int x = 0; x < sof; ++x)
+            {
+                V2f px = CubeMap::pixelPosition (
+                    CubeMapFace (face), header.dataWindow (), V2f (x, y));
+
+                Rgba& p = pixels[int (px.y + 0.5)][int (px.x + 0.5)];
+
+                V3f dir = CubeMap::direction (
+                    CubeMapFace (face), header.dataWindow (), V2f (x, y));
+                dir.normalize ();
+
+                p.r = dir.x + 1;
+                p.g = dir.y + 1;
+                p.b = dir.z + 1;
+            }
+        }
+    }
+
+    {
+        RgbaOutputFile out (fileName1, header, WRITE_RGB);
+        out.setFrameBuffer (&pixels[0][0], 1, W);
+        out.writePixels (H);
+    }
+
+    for (int y = 0; y < H; ++y)
+    {
+        for (int x = 0; x < W; ++x)
+        {
+            Rgba& p = pixels[y][x];
+            assert (p.r != 0 || p.g != 0 || p.b != 0);
+        }
+    }
+
+    Rand48 rand (0);
+
+    for (int i = 0; i < W * H * 3; ++i)
+    {
+        V3f dir = hollowSphereRand<V3f> (rand);
+
+        CubeMapFace face;
+        V2f         pif;
+
+        CubeMap::faceAndPixelPosition (dir, header.dataWindow (), face, pif);
+
+        V2f pos = CubeMap::pixelPosition (face, header.dataWindow (), pif);
+
+        Rgba& p = pixels[int (pos.y + 0.5)][int (pos.x + 0.5)];
+
+        p.r = (dir.x + 1) * 0.8;
+        p.g = (dir.y + 1) * 0.8;
+        p.b = (dir.z + 1) * 0.8;
+
+        V3f dir1 = CubeMap::direction (face, header.dataWindow (), pif);
+        assert (dir.equalWithAbsError (dir1.normalized (), 1e-6f));
+    }
+
+    {
+        RgbaOutputFile out (fileName2, header, WRITE_RGB);
+        out.setFrameBuffer (&pixels[0][0], 1, W);
+        out.writePixels (H);
+    }
+
+    remove (fileName1);
+    remove (fileName2);
+}
+
+void
+writeReadKeyCode (const char fileName[])
+{
+    cout << "key code attribute" << endl;
+
+    cout << "writing, ";
+
+    KeyCode k1 (
+        12,     // filmMfcCode
+        34,     // filmType
+        123456, // prefix
+        1234,   // count
+        45,     // perfOffset
+        3,      // perfsPerFrame
+        80);    // perfsPerCount
+
+    KeyCode k2 = k1;
+
+    assert (k2 == k1);
+    
+    assert (k1.filmMfcCode () == 12);
+    assert (k1.filmType () == 34);
+    assert (k1.prefix () == 123456);
+    assert (k1.count () == 1234);
+    assert (k1.perfOffset () == 45);
+    assert (k1.perfsPerFrame () == 3);
+    assert (k1.perfsPerCount () == 80);
+
+    static const int W = 100;
+    static const int H = 100;
+
+    Header header (W, H);
+    assert (hasKeyCode (header) == false);
+
+    addKeyCode (header, k1);
+    assert (hasKeyCode (header) == true);
+
+    {
+        RgbaOutputFile out (fileName, header);
+        Rgba           pixels[W];
+
+        for (int i = 0; i < W; ++i)
+        {
+            pixels[i].r = 1;
+            pixels[i].g = 1;
+            pixels[i].b = 1;
+            pixels[i].a = 1;
+        }
+
+        out.setFrameBuffer (pixels, 1, 0);
+        out.writePixels (H);
+    }
+
+    cout << "reading, comparing" << endl;
+
+    {
+        RgbaInputFile  in (fileName);
+        const KeyCode& k2 = keyCode (in.header ());
+
+        assert (hasKeyCode (in.header ()) == true);
+        assert (k1.filmMfcCode () == k2.filmMfcCode ());
+        assert (k1.filmType () == k2.filmType ());
+        assert (k1.prefix () == k2.prefix ());
+        assert (k1.count () == k2.count ());
+        assert (k1.perfOffset () == k2.perfOffset ());
+        assert (k1.perfsPerFrame () == k2.perfsPerFrame ());
+        assert (k1.perfsPerCount () == k2.perfsPerCount ());
+    }
+
+    remove (fileName);
+}
+
+void
+timeCodeMethods ()
+{
+    cout << "time code methods" << endl;
+
+    TimeCode t;
+
+    assert (t.timeAndFlags () == 0);
+    assert (t.userData () == 0);
+
+    // Frames
+
+    t.setTimeAndFlags (0x00000000);
+    t.setFrame (29);
+    assert (t.frame () == 29);
+    assert (t.timeAndFlags () == 0x00000029);
+
+    t.setTimeAndFlags (0xffffffff);
+    t.setFrame (0);
+    assert (t.frame () == 0);
+    assert (t.timeAndFlags () == 0xffffffc0);
+
+    // Seconds
+
+    t.setTimeAndFlags (0x00000000);
+    t.setSeconds (59);
+    assert (t.seconds () == 59);
+    assert (t.timeAndFlags () == 0x00005900);
+
+    t.setTimeAndFlags (0xffffffff);
+    t.setSeconds (0);
+    assert (t.seconds () == 0);
+    assert (t.timeAndFlags () == 0xffff80ff);
+
+    // Minutes
+
+    t.setTimeAndFlags (0x00000000);
+    t.setMinutes (59);
+    assert (t.minutes () == 59);
+    assert (t.timeAndFlags () == 0x00590000);
+
+    t.setTimeAndFlags (0xffffffff);
+    t.setMinutes (0);
+    assert (t.minutes () == 0);
+    assert (t.timeAndFlags () == 0xff80ffff);
+
+    // Hours
+
+    t.setTimeAndFlags (0x00000000);
+    t.setHours (23);
+    assert (t.hours () == 23);
+    assert (t.timeAndFlags () == 0x23000000);
+
+    t.setTimeAndFlags (0xffffffff);
+    t.setHours (0);
+    assert (t.hours () == 0);
+    assert (t.timeAndFlags () == 0xc0ffffff);
+
+    // Drop frame flag
+
+    t.setTimeAndFlags (0x00000000);
+    t.setDropFrame (true);
+    assert (t.dropFrame () == true);
+    assert (t.timeAndFlags () == 0x00000040);
+
+    t.setTimeAndFlags (0xffffffff);
+    t.setDropFrame (false);
+    assert (t.dropFrame () == false);
+    assert (t.timeAndFlags () == 0xffffffbf);
+
+    // Color frame flag
+
+    t.setTimeAndFlags (0x00000000);
+    t.setColorFrame (true);
+    assert (t.colorFrame () == true);
+    assert (t.timeAndFlags () == 0x00000080);
+
+    t.setTimeAndFlags (0xffffffff);
+    t.setColorFrame (false);
+    assert (t.colorFrame () == false);
+    assert (t.timeAndFlags () == 0xffffff7f);
+
+    // Field/phase flag
+
+    t.setTimeAndFlags (0x00000000);
+    t.setFieldPhase (true);
+    assert (t.fieldPhase () == true);
+    assert (t.timeAndFlags (TimeCode::TV60_PACKING) == 0x00008000);
+    assert (t.timeAndFlags (TimeCode::TV50_PACKING) == 0x80000000);
+    assert (t.timeAndFlags (TimeCode::FILM24_PACKING) == 0x00008000);
+
+    t.setTimeAndFlags (0xffffffff);
+    t.setFieldPhase (false);
+    assert (t.fieldPhase () == false);
+    assert (t.timeAndFlags (TimeCode::TV60_PACKING) == 0xffff7fff);
+    assert (t.timeAndFlags (TimeCode::TV50_PACKING) == 0x7fffffbf);
+    assert (t.timeAndFlags (TimeCode::FILM24_PACKING) == 0xffff7f3f);
+
+    t.setTimeAndFlags (0x23595929 | 0x00008000, TimeCode::TV60_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x00008000));
+
+    t.setTimeAndFlags (0x23595929 | 0x80000000, TimeCode::TV50_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x00008000));
+
+    t.setTimeAndFlags (0x23595929 | 0x00008000, TimeCode::FILM24_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x00008000));
+
+    // bgf0
+
+    t.setTimeAndFlags (0x00000000);
+    t.setBgf0 (true);
+    assert (t.bgf0 () == true);
+    assert (t.timeAndFlags (TimeCode::TV60_PACKING) == 0x00800000);
+    assert (t.timeAndFlags (TimeCode::TV50_PACKING) == 0x00008000);
+    assert (t.timeAndFlags (TimeCode::FILM24_PACKING) == 0x00800000);
+
+    t.setTimeAndFlags (0xffffffff);
+    t.setBgf0 (false);
+    assert (t.bgf0 () == false);
+    assert (t.timeAndFlags (TimeCode::TV60_PACKING) == 0xff7fffff);
+    assert (t.timeAndFlags (TimeCode::TV50_PACKING) == 0xffff7fbf);
+    assert (t.timeAndFlags (TimeCode::FILM24_PACKING) == 0xff7fff3f);
+
+    t.setTimeAndFlags (0x23595929 | 0x00800000, TimeCode::TV60_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x00800000));
+
+    t.setTimeAndFlags (0x23595929 | 0x00008000, TimeCode::TV50_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x00800000));
+
+    t.setTimeAndFlags (0x23595929 | 0x00800000, TimeCode::FILM24_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x00800000));
+
+    // bgf1
+
+    t.setTimeAndFlags (0x00000000);
+    t.setBgf1 (true);
+    assert (t.bgf1 () == true);
+    assert (t.timeAndFlags (TimeCode::TV60_PACKING) == 0x40000000);
+    assert (t.timeAndFlags (TimeCode::TV50_PACKING) == 0x40000000);
+    assert (t.timeAndFlags (TimeCode::FILM24_PACKING) == 0x40000000);
+
+    t.setTimeAndFlags (0xffffffff);
+    t.setBgf1 (false);
+    assert (t.bgf1 () == false);
+    assert (t.timeAndFlags (TimeCode::TV60_PACKING) == 0xbfffffff);
+    assert (t.timeAndFlags (TimeCode::TV50_PACKING) == 0xbfffffbf);
+    assert (t.timeAndFlags (TimeCode::FILM24_PACKING) == 0xbfffff3f);
+
+    t.setTimeAndFlags (0x23595929 | 0x40000000, TimeCode::TV60_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x40000000));
+
+    t.setTimeAndFlags (0x23595929 | 0x40000000, TimeCode::TV50_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x40000000));
+
+    t.setTimeAndFlags (0x23595929 | 0x40000000, TimeCode::FILM24_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x40000000));
+
+    // bgf2
+
+    t.setTimeAndFlags (0x00000000);
+    t.setBgf2 (true);
+    assert (t.bgf2 () == true);
+    assert (t.timeAndFlags (TimeCode::TV60_PACKING) == 0x80000000);
+    assert (t.timeAndFlags (TimeCode::TV50_PACKING) == 0x00800000);
+    assert (t.timeAndFlags (TimeCode::FILM24_PACKING) == 0x80000000);
+
+    t.setTimeAndFlags (0xffffffff);
+    t.setBgf2 (false);
+    assert (t.bgf2 () == false);
+    assert (t.timeAndFlags (TimeCode::TV60_PACKING) == 0x7fffffff);
+    assert (t.timeAndFlags (TimeCode::TV50_PACKING) == 0xff7fffbf);
+    assert (t.timeAndFlags (TimeCode::FILM24_PACKING) == 0x7fffff3f);
+
+    t.setTimeAndFlags (0x23595929 | 0x80000000, TimeCode::TV60_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x80000000));
+
+    t.setTimeAndFlags (0x23595929 | 0x00800000, TimeCode::TV50_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x80000000));
+
+    t.setTimeAndFlags (0x23595929 | 0x80000000, TimeCode::FILM24_PACKING);
+    assert (t.timeAndFlags () == (0x23595929 | 0x80000000));
+
+    // User-defined data
+
+    t.setUserData (0x87654321);
+    assert (t.userData () == 0x87654321);
+
+    assert (t.binaryGroup (1) == 1);
+    assert (t.binaryGroup (2) == 2);
+    assert (t.binaryGroup (3) == 3);
+    assert (t.binaryGroup (4) == 4);
+    assert (t.binaryGroup (5) == 5);
+    assert (t.binaryGroup (6) == 6);
+    assert (t.binaryGroup (7) == 7);
+
+    t.setBinaryGroup (1, 2);
+    t.setBinaryGroup (2, 3);
+    t.setBinaryGroup (3, 4);
+    t.setBinaryGroup (4, 5);
+    t.setBinaryGroup (5, 6);
+    t.setBinaryGroup (6, 7);
+    t.setBinaryGroup (7, 8);
+    t.setBinaryGroup (8, 9);
+
+    assert (t.userData () == 0x98765432);
+
+    // Assignment
+
+    TimeCode t1 (
+        12,
+        17,
+        57,
+        14, // hours, minutes, seconds, frame
+        false,
+        false,
+        false, // dropFrame, colorFrame, fieldPhase
+        false,
+        false,
+        false, // bgf0, bgf1, bgf2
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8); // binary groups 1 to 8
+    t = t1;
+
+    assert (t.timeAndFlags () == 0x12175714);
+    assert (t.userData () == 0x87654321);
+}
+
+void
+writeReadTimeCode (const char fileName[])
+{
+    cout << "time code attribute" << endl;
+
+    cout << "writing, ";
+
+    TimeCode t1 (0x23595829, 0x12345678, TimeCode::FILM24_PACKING);
+
+    assert (t1.timeAndFlags (TimeCode::FILM24_PACKING) == 0x23595829);
+    assert (t1.userData () == 0x12345678);
+
+    static const int W = 100;
+    static const int H = 100;
+
+    Header header (W, H);
+    assert (hasTimeCode (header) == false);
+
+    addTimeCode (header, t1);
+    assert (hasTimeCode (header) == true);
+
+    {
+        RgbaOutputFile out (fileName, header);
+        Rgba           pixels[W];
+
+        for (int i = 0; i < W; ++i)
+        {
+            pixels[i].r = 1;
+            pixels[i].g = 1;
+            pixels[i].b = 1;
+            pixels[i].a = 1;
+        }
+
+        out.setFrameBuffer (pixels, 1, 0);
+        out.writePixels (H);
+    }
+
+    cout << "reading, comparing" << endl;
+
+    {
+        RgbaInputFile   in (fileName);
+        const TimeCode& t2 = timeCode (in.header ());
+
+        assert (hasTimeCode (in.header ()) == true);
+        assert (t1.timeAndFlags () == t2.timeAndFlags ());
+        assert (t1.userData () == t2.userData ());
+    }
+
+    remove (fileName);
+}
+
+bool
+equal (const Rational& a, const Rational& b)
+{
+    return a.n == b.n && a.d == b.d;
+}
+
+void
+rationalMethods ()
+{
+    cout << "rational methods" << endl;
+
+    Rational r0 (0, 1);
+    assert (r0 == 0);
+
+    Rational r1 (1, 1);
+    assert (r1 == 1);
+
+    Rational r2 (1, 4);
+    assert (r2 == 0.25);
+
+    Rational r3 (-8, 2);
+    assert (r3 == -4);
+
+    Rational r4 (0.0);
+    assert (r4 == 0);
+
+    Rational r5 (1e-50);
+    assert (r5 == 0);
+
+    Rational r6 (1.0);
+    assert (r6 == 1.0 && r6.n == 1 && r6.d == 1);
+
+    Rational r7 (-10.0);
+    assert (r7 == -10.0 && r7.n == -10 && r7.d == 1);
+
+    Rational r8 (0.03125);
+    assert (r8 == 0.03125 && r8.n == 1 && r8.d == 32);
+
+    Rational r9 (0.53125);
+    assert (r9 == 0.53125 && r9.n == 17 && r9.d == 32);
+
+    Rational r10 (10.1);
+    assert (equalWithAbsError (double (r10), 10.1, 1e-8));
+
+    Rational r11 (double ((1U << 30) - 1));
+    assert (r11 == double ((1U << 30) - 1));
+
+    assert (equal (guessExactFps (23.976), fps_23_976 ()));
+    assert (equal (guessExactFps (24.000), fps_24 ()));
+    assert (equal (guessExactFps (25.000), fps_25 ()));
+    assert (equal (guessExactFps (29.970), fps_29_97 ()));
+    assert (equal (guessExactFps (30.000), fps_30 ()));
+    assert (equal (guessExactFps (47.952), fps_47_952 ()));
+    assert (equal (guessExactFps (48.000), fps_48 ()));
+    assert (equal (guessExactFps (50.000), fps_50 ()));
+    assert (equal (guessExactFps (59.940), fps_59_94 ()));
+    assert (equal (guessExactFps (60.000), fps_60 ()));
+    assert (equal (guessExactFps (70.500), Rational (141, 2)));
+}
+
+void
+writeReadRational (const char fileName[])
+{
+    cout << "rational attribute" << endl;
+
+    cout << "writing, ";
+
+    Rational r1 (12, 17);
+    Rational r2 (-12, 3);
+
+    static const int W = 100;
+    static const int H = 100;
+
+    Header header (W, H);
+    header.insert ("r1", RationalAttribute (r1));
+    header.insert ("r2", RationalAttribute (r2));
+
+    {
+        RgbaOutputFile out (fileName, header);
+        Rgba           pixels[W];
+
+        for (int i = 0; i < W; ++i)
+        {
+            pixels[i].r = 1;
+            pixels[i].g = 1;
+            pixels[i].b = 1;
+            pixels[i].a = 1;
+        }
+
+        out.setFrameBuffer (pixels, 1, 0);
+        out.writePixels (H);
+    }
+
+    cout << "reading, comparing" << endl;
+
+    {
+        RgbaInputFile in (fileName);
+
+        const Rational& r3 =
+            in.header ().typedAttribute<RationalAttribute> ("r1").value ();
+
+        const Rational& r4 =
+            in.header ().typedAttribute<RationalAttribute> ("r2").value ();
+
+        assert (equal (r1, r3));
+        assert (equal (r2, r4));
+    }
+
+    remove (fileName);
+}
+
+void
+generatedFunctions ()
+{
+    //
+    // Most optional standard attributes are of type string, float,
+    // etc.  The attribute types are already being tested elsewhere
+    // (testAttributes.C), and the convenience functions to access
+    // the standard attributes are all generated via macros.  Here
+    // we just verify that all the convenience functions exist
+    // (that is, ImfStandardAttributes.C and ImfStandardAttributes.h
+    // contain the right macro invocations).  If any functions are
+    // missing, we should get an error during compiling or linking.
+    //
+
+    cout << "automatically generated functions" << endl;
+
+    Header header;
+
+    assert (hasOriginalDataWindow (header) == false);
+    assert (hasWorldToCamera (header) == false);
+    assert (hasWorldToNDC (header) == false);
+    assert (hasAscFramingDecisionList (header) == false);
+    assert (hasSensorCenterOffset (header) == false);
+    assert (hasSensorOverallDimensions (header) == false);
+    assert (hasSensorPhotositePitch (header) == false);
+    assert (hasSensorAcquisitionRectangle (header) == false);
+    assert (hasXDensity (header) == false);
+    assert (hasLongitude (header) == false);
+    assert (hasLatitude (header) == false);
+    assert (hasAltitude (header) == false);
+    assert (hasCameraMake (header) == false);
+    assert (hasCameraModel (header) == false);
+    assert (hasCameraSerialNumber (header) == false);
+    assert (hasCameraFirmwareVersion (header) == false);
+    assert (hasCameraUuid (header) == false);
+    assert (hasCameraLabel (header) == false);
+    assert (hasCameraCCTSetting (header) == false);
+    assert (hasCameraTintSetting (header) == false);
+    assert (hasCameraColorBalance (header) == false);
+    assert (hasIsoSpeed (header) == false);
+    assert (hasExpTime (header) == false);
+    assert (hasShutterAngle (header) == false);
+    assert (hasCaptureRate (header) == false);
+    assert (hasLensMake (header) == false);
+    assert (hasLensModel (header) == false);
+    assert (hasLensSerialNumber (header) == false);
+    assert (hasLensFirmwareVersion (header) == false);
+    assert (hasNominalFocalLength (header) == false);
+    assert (hasPinholeFocalLength (header) == false);
+    assert (hasEffectiveFocalLength (header) == false);
+    assert (hasEntrancePupilOffset (header) == false);
+    assert (hasAperture (header) == false);
+    assert (hasTStop (header) == false);
+    assert (hasFocus (header) == false);
+    assert (hasOwner (header) == false);
+    assert (hasComments (header) == false);
+    assert (hasCapDate (header) == false);
+    assert (hasUtcOffset (header) == false);
+    assert (hasKeyCode (header) == false);
+    assert (hasTimeCode (header) == false);
+    assert (hasFramesPerSecond (header) == false);
+    assert (hasImageCounter (header) == false);
+    assert (hasReelName (header) == false);
+    assert (hasChromaticities (header) == false);
+    assert (hasWhiteLuminance (header) == false);
+    assert (hasAdoptedNeutral (header) == false);
+    assert (hasEnvmap (header) == false);
+    assert (hasWrapmodes (header) == false);
+    assert (hasMultiView (header) == false);
+    assert (hasDeepImageState (header) == false);
+    assert (hasIDManifest (header) == false);
+    assert (hasColorInteropID (header) == false);
+
+#if defined(_MSC_VER)
+    __pragma(warning(push))
+    __pragma(warning(disable: 4996))
+#elif defined(__clang__) || defined(__GNUC__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+    assert (hasRenderingTransform (header) == false);
+    assert (hasLookModTransform (header) == false);
+#if defined(_MSC_VER)
+    __pragma(warning(pop))
+#elif defined(__clang__) || defined(__GNUC__)
+    #pragma GCC diagnostic pop
+#endif
+}
+
+void
+writeReadColorInteropID(const char fileName[])
+{
+    cout << "colorInteropID attribute" << endl;
+
+    cout << "writing, ";
+
+    static const int W = 100;
+    static const int H = 100;
+
+    Header header (W, H);
+    assert (hasColorInteropID (header) == false);
+
+    std::string id1 = "lin_ap1_scene";
+
+    addColorInteropID (header, id1);
+    assert (hasColorInteropID (header) == true);
+
+    {
+        RgbaOutputFile out (fileName, header);
+        Rgba           pixels[W];
+
+        for (int i = 0; i < W; ++i)
+        {
+            pixels[i].r = 1;
+            pixels[i].g = 1;
+            pixels[i].b = 1;
+            pixels[i].a = 1;
+        }
+
+        out.setFrameBuffer (pixels, 1, 0);
+        out.writePixels (H);
+    }
+
+    cout << "reading, comparing" << endl;
+
+    {
+        RgbaInputFile  in (fileName);
+        std::string  id2 = colorInteropID(in.header());
+
+        assert (hasColorInteropID (in.header ()) == true);
+        assert (id1 == id2);
+    }
+
+    remove (fileName);
+}
+
+void
+convertColorInteropIDAndChromaticities ()
+{
+    cout << "conversion between colorInteropID and chromaticities" << endl;
+
+    static const char* ids[] = {
+        "lin_rec709_scene",
+        "lin_ap0_scene",
+        "lin_ap1_scene",
+        "lin_p3d65_scene",
+        "lin_rec2020_scene",
+        "lin_adobergb_scene"};
+    static const size_t numIds = sizeof (ids) / sizeof (ids[0]);
+
+    //
+    // Every supported ID round trips, and the six entries are distinct.
+    //
+
+    for (size_t i = 0; i < numIds; i++)
+    {
+        Chromaticities c;
+        assert (colorInteropIDToChromaticities (ids[i], c) == true);
+
+        std::string id;
+        assert (chromaticitiesToColorInteropID (c, id) == true);
+        assert (id == ids[i]);
+
+        for (size_t j = 0; j < i; j++)
+        {
+            Chromaticities other;
+            assert (colorInteropIDToChromaticities (ids[j], other) == true);
+            assert (other != c);
+        }
+    }
+
+    //
+    // Spot check the table values, including the negative blue y of
+    // lin_ap0_scene.
+    //
+
+    {
+        Chromaticities c;
+        assert (colorInteropIDToChromaticities ("lin_ap0_scene", c) == true);
+        assert (c.red == V2f (0.73470f, 0.26530f));
+        assert (c.green == V2f (0.00000f, 1.00000f));
+        assert (c.blue == V2f (0.00010f, -0.07700f));
+        assert (c.white == V2f (0.32168f, 0.33767f));
+    }
+
+    //
+    // Unsupported values are reported by the return value, and leave the
+    // output argument untouched.
+    //
+
+    {
+        static const char* unsupported[] = {
+            "unknown", "data", "", "srgb_display", "lin_ap1", "LIN_AP1_SCENE"};
+        static const size_t numUnsupported =
+            sizeof (unsupported) / sizeof (unsupported[0]);
+
+        const Chromaticities sentinel (
+            V2f (1.f, 2.f), V2f (3.f, 4.f), V2f (5.f, 6.f), V2f (7.f, 8.f));
+
+        for (size_t i = 0; i < numUnsupported; i++)
+        {
+            Chromaticities c = sentinel;
+            assert (
+                colorInteropIDToChromaticities (unsupported[i], c) == false);
+            assert (c == sentinel);
+        }
+
+        std::string id = "untouched";
+        assert (chromaticitiesToColorInteropID (sentinel, id) == false);
+        assert (id == "untouched");
+    }
+
+    //
+    // Chromaticities within the tolerance of a table entry match it; those
+    // outside do not.
+    //
+
+    {
+        Chromaticities c;
+        assert (
+            colorInteropIDToChromaticities ("lin_p3d65_scene", c) == true);
+
+        Chromaticities near = c;
+        near.red.x += 0.0005f;
+        near.white.y -= 0.0005f;
+
+        std::string id;
+        assert (chromaticitiesToColorInteropID (near, id) == true);
+        assert (id == "lin_p3d65_scene");
+
+        Chromaticities far = c;
+        far.red.x += 0.002f;
+
+        id = "untouched";
+        assert (chromaticitiesToColorInteropID (far, id) == false);
+        assert (id == "untouched");
+
+        // a tolerance wide enough to cover the difference matches again
+        assert (chromaticitiesToColorInteropID (far, id, 0.002f) == true);
+        assert (id == "lin_p3d65_scene");
+    }
+
+    //
+    // The Rec.709 primaries are defined twice in the library: here and as
+    // the Chromaticities default constructor. They must agree.
+    //
+
+    {
+        Chromaticities rec709;
+        assert (
+            colorInteropIDToChromaticities ("lin_rec709_scene", rec709) ==
+            true);
+        assert (rec709 == Chromaticities ());
+    }
+}
+
+//
+// The following tests are similar to src/test/OpenEXRCoreTest/color_metadata.cpp
+// and validate that ImfStandardAttributes.cpp faithfully forwards the corresponding
+// functions from the Core API.
+//
+
+void
+checkColorMetadataConsistency ()
+{
+    cout << "checking color space metadata for consistency" << endl;
+
+    Chromaticities ap1;
+    Chromaticities ap0;
+    Chromaticities rec709;
+    assert (colorInteropIDToChromaticities ("lin_ap1_scene", ap1));
+    assert (colorInteropIDToChromaticities ("lin_ap0_scene", ap0));
+    assert (colorInteropIDToChromaticities ("lin_rec709_scene", rec709));
+
+    //
+    // With no colorInteropID, the chromaticities are not checked.
+    //
+
+    {
+        Header h;
+        addChromaticities (h, rec709);
+        addWhiteLuminance (h, 100.f);
+        assert (checkColorMetadata (h) == COLOR_METADATA_OK);
+    }
+
+    //
+    // A colorInteropID that agrees with the chromaticities is clean.
+    //
+
+    {
+        Header h;
+        addColorInteropID (h, "lin_ap1_scene");
+        addChromaticities (h, ap1);
+        assert (checkColorMetadata (h) == COLOR_METADATA_OK);
+    }
+
+    //
+    // An ID with no chromaticities mapping is not checked against them.
+    //
+
+    {
+        Header h;
+        addColorInteropID (h, "ocio:lin_awg4_scene");
+        addChromaticities (h, rec709);
+        assert (checkColorMetadata (h) == COLOR_METADATA_OK);
+    }
+
+    //
+    // An ID that disagrees with the chromaticities is reported.
+    //
+
+    {
+        Header h;
+        addColorInteropID (h, "lin_ap1_scene");
+        addChromaticities (h, rec709);
+        assert (
+            checkColorMetadata (h) == COLOR_METADATA_CHROMATICITIES_DIFFER);
+    }
+
+    //
+    // Chromaticities that match no known color space at all are the same
+    // finding: they are not the ones the ID names.
+    //
+
+    {
+        Header h;
+        addColorInteropID (h, "lin_ap1_scene");
+        addChromaticities (
+            h,
+            Chromaticities (
+                V2f (0.1f, 0.2f),
+                V2f (0.3f, 0.4f),
+                V2f (0.5f, 0.6f),
+                V2f (0.7f, 0.8f)));
+        assert (
+            checkColorMetadata (h) == COLOR_METADATA_CHROMATICITIES_DIFFER);
+    }
+
+    //
+    // An empty ID says nothing; it should be omitted, or "unknown", instead.
+    //
+
+    {
+        Header h;
+        addColorInteropID (h, "");
+        assert (checkColorMetadata (h) == COLOR_METADATA_EMPTY_INTEROP_ID);
+    }
+
+    //
+    // A part tagged "data" should not carry colorimetry attributes. Each
+    // offending attribute is reported separately, and they combine.
+    //
+
+    {
+        Header h;
+        addColorInteropID (h, "data");
+        assert (checkColorMetadata (h) == COLOR_METADATA_OK);
+    }
+
+    {
+        Header h;
+        addColorInteropID (h, "data");
+        addChromaticities (h, ap1);
+        assert (
+            checkColorMetadata (h) ==
+            COLOR_METADATA_DATA_HAS_CHROMATICITIES);
+    }
+
+    {
+        Header h;
+        addColorInteropID (h, "data");
+        addChromaticities (h, ap1);
+        addWhiteLuminance (h, 100.f);
+        addAdoptedNeutral (h, V2f (0.32168f, 0.33767f));
+        assert (
+            checkColorMetadata (h) ==
+            (COLOR_METADATA_DATA_HAS_CHROMATICITIES |
+             COLOR_METADATA_DATA_HAS_WHITE_LUMINANCE |
+             COLOR_METADATA_DATA_HAS_ADOPTED_NEUTRAL));
+    }
+
+    //
+    // In a multipart file, a later part may omit colorInteropID, inheriting
+    // the first part's, or set it to "data".
+    //
+
+    {
+        Header first;
+        addColorInteropID (first, "lin_ap1_scene");
+
+        {
+            Header later;
+            assert (checkColorMetadata (later, first) == COLOR_METADATA_OK);
+        }
+
+        {
+            Header later;
+            addColorInteropID (later, "data");
+            assert (checkColorMetadata (later, first) == COLOR_METADATA_OK);
+        }
+
+        {
+            Header later;
+            addColorInteropID (later, "lin_ap1_scene");
+            assert (checkColorMetadata (later, first) == COLOR_METADATA_OK);
+        }
+
+        //
+        // Any other value that differs from the first part's leaves the
+        // part's color space ambiguous.
+        //
+
+        {
+            Header later;
+            addColorInteropID (later, "lin_ap0_scene");
+            assert (
+                checkColorMetadata (later, first) ==
+                COLOR_METADATA_INTEROP_ID_NOT_SHARED);
+        }
+    }
+
+    //
+    // A later part cannot inherit from a first part that has no ID either.
+    //
+
+    {
+        Header first;
+        Header later;
+        addColorInteropID (later, "lin_ap1_scene");
+        assert (
+            checkColorMetadata (later, first) ==
+            COLOR_METADATA_INTEROP_ID_NOT_SHARED);
+    }
+
+    //
+    // The shared attribute rule is only checked by the two-header overload;
+    // the same header on its own is clean.
+    //
+
+    {
+        Header first;
+        Header later;
+        addColorInteropID (later, "lin_ap1_scene");
+        assert (checkColorMetadata (later) == COLOR_METADATA_OK);
+    }
+
+    //
+    // Per-part and shared problems are reported together.
+    //
+
+    {
+        Header first;
+        addColorInteropID (first, "lin_ap1_scene");
+
+        Header later;
+        addColorInteropID (later, "lin_ap0_scene");
+        addChromaticities (later, rec709);
+
+        assert (
+            checkColorMetadata (later, first) ==
+            (COLOR_METADATA_CHROMATICITIES_DIFFER |
+             COLOR_METADATA_INTEROP_ID_NOT_SHARED));
+    }
+
+    //
+    // acesImageContainerFlag asserts ST 2065-4 compliance, which requires
+    // the color space be ACES2065-1. A header that says so consistently is
+    // clean, and the colorInteropID may be omitted.
+    //
+
+    {
+        Header h;
+        addAcesImageContainerFlag (h, 1);
+        addColorInteropID (h, "lin_ap0_scene");
+        addChromaticities (h, ap0);
+        assert (checkColorMetadata (h) == COLOR_METADATA_OK);
+    }
+
+    {
+        Header h;
+        addAcesImageContainerFlag (h, 1);
+        addChromaticities (h, ap0);
+        assert (checkColorMetadata (h) == COLOR_METADATA_OK);
+    }
+
+    //
+    // The chromaticities may not be omitted; ST 2065-4 requires them.
+    //
+
+    {
+        Header h;
+        addAcesImageContainerFlag (h, 1);
+        addColorInteropID (h, "lin_ap0_scene");
+        assert (
+            checkColorMetadata (h) ==
+            COLOR_METADATA_ACES_FLAG_NO_CHROMATICITIES);
+    }
+
+    //
+    // A present colorInteropID has to agree, and so do the chromaticities.
+    // Here the two agree with each other, so only the ACES rule is broken.
+    //
+
+    {
+        Header h;
+        addAcesImageContainerFlag (h, 1);
+        addColorInteropID (h, "lin_rec709_scene");
+        addChromaticities (h, rec709);
+        assert (
+            checkColorMetadata (h) ==
+            (COLOR_METADATA_ACES_FLAG_INTEROP_ID_NOT_AP0 |
+             COLOR_METADATA_ACES_FLAG_CHROMATICITIES_NOT_AP0));
+    }
+
+    //
+    // 1 is the only defined value of the flag.
+    //
+
+    {
+        Header h;
+        addAcesImageContainerFlag (h, 0);
+        addColorInteropID (h, "lin_ap0_scene");
+        addChromaticities (h, ap0);
+        assert (checkColorMetadata (h) == COLOR_METADATA_ACES_FLAG_NOT_ONE);
+    }
+
+    //
+    // An attribute of the wrong type is reported the same way as a wrong
+    // value. hasAcesImageContainerFlag() is false for it, so this is the
+    // case that would otherwise slip through unchecked.
+    //
+
+    {
+        Header h;
+        h.insert ("acesImageContainerFlag", StringAttribute ("yes"));
+        addColorInteropID (h, "lin_ap0_scene");
+        addChromaticities (h, ap0);
+        assert (hasAcesImageContainerFlag (h) == false);
+        assert (checkColorMetadata (h) == COLOR_METADATA_ACES_FLAG_NOT_ONE);
+    }
+
+    //
+    // Without the flag, none of this is checked: a header with no
+    // chromaticities is unremarkable.
+    //
+
+    {
+        Header h;
+        addColorInteropID (h, "lin_ap0_scene");
+        assert (checkColorMetadata (h) == COLOR_METADATA_OK);
+    }
+
+    //
+    // A part tagged "data" cannot also be an ACES container.
+    //
+
+    {
+        Header h;
+        addAcesImageContainerFlag (h, 1);
+        addColorInteropID (h, "data");
+        addChromaticities (h, ap0);
+        assert (
+            checkColorMetadata (h) ==
+            (COLOR_METADATA_DATA_HAS_CHROMATICITIES |
+             COLOR_METADATA_ACES_FLAG_INTEROP_ID_NOT_AP0));
+    }
+
+    //
+    // The flag alone, with no other color metadata at all, still makes a
+    // claim, so it is still checked.
+    //
+
+    {
+        Header h;
+        addAcesImageContainerFlag (h, 1);
+        assert (
+            checkColorMetadata (h) ==
+            COLOR_METADATA_ACES_FLAG_NO_CHROMATICITIES);
+    }
+
+    //
+    // Every flag has a description, and they are distinct.
+    //
+
+    {
+        static const ColorMetadataWarning warnings[] = {
+            COLOR_METADATA_EMPTY_INTEROP_ID,
+            COLOR_METADATA_CHROMATICITIES_DIFFER,
+            COLOR_METADATA_DATA_HAS_CHROMATICITIES,
+            COLOR_METADATA_DATA_HAS_WHITE_LUMINANCE,
+            COLOR_METADATA_DATA_HAS_ADOPTED_NEUTRAL,
+            COLOR_METADATA_INTEROP_ID_NOT_SHARED,
+            COLOR_METADATA_ACES_FLAG_NOT_ONE,
+            COLOR_METADATA_ACES_FLAG_INTEROP_ID_NOT_AP0,
+            COLOR_METADATA_ACES_FLAG_NO_CHROMATICITIES,
+            COLOR_METADATA_ACES_FLAG_CHROMATICITIES_NOT_AP0};
+        static const size_t numWarnings =
+            sizeof (warnings) / sizeof (warnings[0]);
+
+        for (size_t i = 0; i < numWarnings; i++)
+        {
+            const char* s = colorMetadataWarningToString (warnings[i]);
+            assert (s != nullptr);
+            assert (s[0] != '\0');
+
+            for (size_t j = 0; j < i; j++)
+                assert (
+                    strcmp (s, colorMetadataWarningToString (warnings[j])) !=
+                    0);
+        }
+    }
+}
+
+} // namespace
+
+void
+testStandardAttributes (const std::string& tempDir)
+{
+    try
+    {
+        cout << "Testing optional standard attributes" << endl;
+
+        convertRGBtoXYZ ();
+
+        convertColorInteropIDAndChromaticities ();
+
+        checkColorMetadataConsistency ();
+
+        {
+            std::string filename = tempDir + "imf_test_chromaticities.exr";
+            writeReadChromaticities (filename.c_str ());
+        }
+
+        {
+            std::string fn1 = tempDir + "imf_test_latlong1.exr";
+            std::string fn2 = tempDir + "imf_test_latlong2.exr";
+            latLongMap (fn1.c_str (), fn2.c_str ());
+        }
+
+        {
+            std::string fn1 = tempDir + "imf_test_cube1.exr";
+            std::string fn2 = tempDir + "imf_test_cube2.exr";
+            cubeMap (fn1.c_str (), fn2.c_str ());
+        }
+
+        {
+            std::string filename = tempDir + "imf_test_keycode.exr";
+            writeReadKeyCode (filename.c_str ());
+        }
+
+        {
+            timeCodeMethods ();
+            std::string filename = tempDir + "imf_test_timecode.exr";
+            writeReadTimeCode (filename.c_str ());
+        }
+
+        {
+            rationalMethods ();
+            std::string filename = tempDir + "imf_test_rational.exr";
+            writeReadRational (filename.c_str ());
+        }
+
+        {
+            std::string filename = tempDir + "imf_colorInteropID.exr";
+            writeReadColorInteropID (filename.c_str ());
+        }
+
+        generatedFunctions ();
+
+        cout << "ok\n" << endl;
+    }
+    catch (const std::exception& e)
+    {
+        cerr << "ERROR -- caught exception: " << e.what () << endl;
+        assert (false);
+    }
+}

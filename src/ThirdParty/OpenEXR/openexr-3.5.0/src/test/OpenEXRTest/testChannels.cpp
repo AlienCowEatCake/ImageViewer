@@ -1,0 +1,369 @@
+//
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (c) Contributors to the OpenEXR Project.
+//
+
+#ifdef NDEBUG
+#    undef NDEBUG
+#endif
+
+#include "ImfArray.h"
+#include "ImfChannelList.h"
+#include "ImfFrameBuffer.h"
+#include "ImfHeader.h"
+#include "ImfInputFile.h"
+#include "ImfOutputFile.h"
+
+#include <Imath/half.h>
+
+#include <assert.h>
+#include <stdio.h>
+
+using namespace OPENEXR_IMF_NAMESPACE;
+using namespace std;
+using namespace IMATH_NAMESPACE;
+
+namespace
+{
+
+void
+fillPixels (Array2D<half>& ph1, Array2D<half>& ph2, int width, int height)
+{
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            ph1[y][x] = x % 10 + 10 * (y % 17);
+            ph2[y][x] = x % 11 + 11 * (y % 15);
+        }
+    }
+}
+
+void
+writeRead (
+    const Array2D<half>& h1out,
+    const Array2D<half>& h2out,
+    const char           fileName[],
+    int                  width,
+    int                  height,
+    bool                 manyC)
+{
+    //
+    // Write an image file with three channels, H1, H2 and H3.
+    // Our frame buffer contains pixel data only for H1 and H2;
+    // the file's H3 channel should be filled with zeroes.
+    //
+
+    Header hdr (width, height);
+
+    hdr.channels ().insert (
+        "H1", // name
+        Channel (
+            HALF, // type
+            1,    // xSampling
+            1)    // ySampling
+    );
+
+    hdr.channels ().insert (
+        "H2", // name
+        Channel (
+            HALF, // type
+            1,    // xSampling
+            1)    // ySampling
+    );
+
+    hdr.channels ().insert (
+        "H3", // name
+        Channel (
+            HALF, // type
+            1,    // xSampling
+            1)    // ySampling
+    );
+    if (manyC)
+    {
+        for ( int curc = 0; curc < 132; ++curc )
+        {
+            char cname[32];
+            snprintf (cname, 32, "c%03d", curc);
+            hdr.channels ().insert (
+                cname,
+                Channel (HALF, 1, 1));
+        }
+    }
+
+    {
+        FrameBuffer fb;
+
+        fb.insert (
+            "H1", // name
+            Slice (
+                HALF,                         // type
+                (char*) &h1out[0][0],         // base
+                sizeof (h1out[0][0]),         // xStride
+                sizeof (h1out[0][0]) * width, // yStride
+                1,                            // xSampling
+                1)                            // ySampling
+        );
+
+        fb.insert (
+            "H2", // name
+            Slice (
+                HALF,                         // type
+                (char*) &h2out[0][0],         // base
+                sizeof (h2out[0][0]),         // xStride
+                sizeof (h2out[0][0]) * width, // yStride
+                1,                            // xSampling
+                1)                            // ySampling
+        );
+
+        if (manyC)
+            cout << "Many Channels: writing" << flush;
+        else
+            cout << "Values: writing" << flush;
+
+        remove (fileName);
+        OutputFile out (fileName, hdr);
+        out.setFrameBuffer (fb);
+        out.writePixels (height);
+    }
+
+    //
+    // Read the image back from the file.  Our frame buffer now
+    // contains space for the three channels, H1, H3 and H4.
+    // H1 and H3 should be read back from the file (but H3
+    // should contain only zeroes), and H4 should be filled
+    // with a default value, 3.0, because the file contains
+    // no data for it.  The file's H2 channel should be ignored.
+    //
+
+    {
+        cout << " reading" << flush;
+
+        InputFile in (fileName);
+
+        const Box2i& dw = in.header ().dataWindow ();
+        int          w  = dw.max.x - dw.min.x + 1;
+        int          h  = dw.max.y - dw.min.y + 1;
+        int          dx = dw.min.x;
+        int          dy = dw.min.y;
+
+        Array2D<half> h1in (h, w);
+        Array2D<half> h3in (h, w);
+        Array2D<half> h4in (h, w);
+
+        FrameBuffer fb;
+
+        fb.insert (
+            "H1", // name
+            Slice (
+                HALF,                    // type
+                (char*) &h1in[-dy][-dx], // base
+                sizeof (h1in[0][0]),     // xStride
+                sizeof (h1in[0][0]) * w, // yStride
+                1,                       // xSampling
+                1,                       // ySampling
+                3.0)                     // fillValue
+        );
+
+        fb.insert (
+            "H3", // name
+            Slice (
+                HALF,                    // type
+                (char*) &h3in[-dy][-dx], // base
+                sizeof (h3in[0][0]),     // xStride
+                sizeof (h3in[0][0]) * w, // yStride
+                1,                       // xSampling
+                1,                       // ySampling
+                3.0)                     // fillValue
+        );
+
+        fb.insert (
+            "H4", // name
+            Slice (
+                HALF,                    // type
+                (char*) &h4in[-dy][-dx], // base
+                sizeof (h4in[0][0]),     // xStride
+                sizeof (h4in[0][0]) * w, // yStride
+                1,                       // xSampling
+                1,                       // ySampling
+                3.0)                     // fillValue
+        );
+
+        in.setFrameBuffer (fb);
+        in.readPixels (dw.min.y, dw.max.y);
+
+        cout << " comparing" << flush;
+
+        assert (in.header ().displayWindow () == hdr.displayWindow ());
+        assert (in.header ().dataWindow () == hdr.dataWindow ());
+        assert (in.header ().pixelAspectRatio () == hdr.pixelAspectRatio ());
+        assert (
+            in.header ().screenWindowCenter () == hdr.screenWindowCenter ());
+        assert (in.header ().screenWindowWidth () == hdr.screenWindowWidth ());
+        assert (in.header ().lineOrder () == hdr.lineOrder ());
+        assert (in.header ().compression () == hdr.compression ());
+
+        ChannelList::ConstIterator hi = hdr.channels ().begin ();
+        ChannelList::ConstIterator ii = in.header ().channels ().begin ();
+
+        while (hi != hdr.channels ().end ())
+        {
+            assert (!strcmp (hi.name (), ii.name ()));
+            assert (hi.channel ().type == ii.channel ().type);
+            assert (hi.channel ().xSampling == ii.channel ().xSampling);
+            assert (hi.channel ().ySampling == ii.channel ().ySampling);
+
+            ++hi;
+            ++ii;
+        }
+
+        assert (ii == in.header ().channels ().end ());
+
+        for (int y = 0; y < h; ++y)
+        {
+            for (int x = 0; x < w; ++x)
+            {
+                assert (h1in[y][x] == h1out[y][x]);
+                assert (h3in[y][x] == 0.0);
+                assert (h4in[y][x] == 3.0);
+            }
+        }
+
+        if (manyC)
+        {
+            for ( int curc = 0; curc < 132; ++curc )
+            {
+                char cname[32];
+                snprintf (cname, 32, "c%03d", curc);
+
+                cout << " " << curc << flush;
+                Array2D<half> testcin (h, w);
+
+                FrameBuffer fb;
+
+                /* if the channel isn't there, will fill with 3 but we should have 0 */
+                fb.insert (
+                    cname, // name
+                    Slice (
+                        HALF,                    // type
+                        (char*) &testcin[-dy][-dx], // base
+                        sizeof (testcin[0][0]),     // xStride
+                        sizeof (testcin[0][0]) * w, // yStride
+                        1, 1, 3.0)
+                           );
+
+                in.setFrameBuffer (fb);
+                in.readPixels (dw.min.y, dw.max.y);
+                for (int y = 0; y < h; ++y)
+                {
+                    for (int x = 0; x < w; ++x)
+                    {
+                        assert (testcin[y][x] == 0.0);
+                    }
+                }
+            }
+        }
+    }
+
+    remove (fileName);
+    cout << endl;
+}
+
+void
+verifyIterators(void)
+{
+    ChannelList l1;
+
+    l1.insert("A", Channel(HALF));
+    l1.insert("B", Channel(HALF));
+    l1.insert("C", Channel(HALF));
+
+    ChannelList::Iterator it1 = l1.begin();
+    ChannelList::ConstIterator cit1 = l1.begin();
+
+    ChannelList::Iterator it2 = l1.end();
+    ChannelList::ConstIterator cit2 = l1.end();
+
+    // Test global '!=' overloads
+    assert(it1 != it2);
+    assert(it1 != cit2);
+    assert(cit1 != it2);
+    assert(cit1 != cit2);
+
+    // Test global '==' overloads
+    assert(it1 == it1);
+    assert(it1 == cit1);
+    assert(cit1 == it1);
+    assert(cit1 == cit1);
+
+    // Test post/pre '++' overloads
+    it1++;
+    ++it1;
+    cit1++;
+    ++cit1;
+    
+    // Test post/pre '--' overloads
+    it1--;
+    --it1;
+    cit1--;
+    --cit1;
+
+    assert(it1 == l1.begin());
+    assert(cit1 == l1.begin());
+     
+    while (it1 != l1.end())
+    {
+        
+        // Test '*' overloads
+        Channel& c = *it1;
+        const Channel& cc = *cit1;
+        assert(c.type == HALF);
+        assert(cc.type == HALF);
+        
+        // Test '->' overload
+        assert(it1->type == HALF);
+        assert(cit1->type == HALF);
+
+        // Test pre/post '++' overloads
+        it1++;
+        cit1++;
+
+    }
+
+    assert(it1 == l1.end());
+    assert(cit1 == l1.end());
+}
+
+} // namespace
+
+void
+testChannels (const std::string& tempDir)
+{
+    try
+    {
+        cout << "Testing ChannelList Iterator behavior" << endl;
+
+        verifyIterators ();
+
+        cout << "Testing filling of missing channels" << endl;
+
+        const int W = 117;
+        const int H = 97;
+
+        Array2D<half> ph1 (H, W);
+        Array2D<half> ph2 (H, W);
+        fillPixels (ph1, ph2, W, H);
+
+        std::string filename = tempDir + "imf_test_channels.exr";
+
+        writeRead (ph1, ph2, filename.c_str (), W, H, false);
+        writeRead (ph1, ph2, filename.c_str (), W, H, true);
+
+        cout << "ok\n" << endl;
+    }
+    catch (const std::exception& e)
+    {
+        cerr << "ERROR -- caught exception: " << e.what () << endl;
+        assert (false);
+    }
+}

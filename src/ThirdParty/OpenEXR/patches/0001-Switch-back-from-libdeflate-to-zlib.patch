@@ -1,17 +1,17 @@
-From 955bf3e7a2a514995d22dab3c6f51e9c2b5512b2 Mon Sep 17 00:00:00 2001
+From ec1ebcbc5157fb85e080618dbd6d481c77c59e3a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Thu, 13 Jun 2024 00:04:24 +0700
 Subject: [PATCH 1/5] Switch back from libdeflate to zlib
 
 ---
- src/lib/OpenEXRCore/compression.c | 130 +++++-------------------------
- 1 file changed, 20 insertions(+), 110 deletions(-)
+ src/lib/OpenEXRCore/compression.c | 171 ++++--------------------------
+ 1 file changed, 20 insertions(+), 151 deletions(-)
 
 diff --git a/src/lib/OpenEXRCore/compression.c b/src/lib/OpenEXRCore/compression.c
-index d64d071e..eab434af 100644
+index ed8ee470..440876e7 100644
 --- a/src/lib/OpenEXRCore/compression.c
 +++ b/src/lib/OpenEXRCore/compression.c
-@@ -16,29 +16,9 @@
+@@ -17,21 +17,7 @@
  
  #include "OpenEXRConfigInternal.h"
  
@@ -31,7 +31,12 @@ index d64d071e..eab434af 100644
 -#    include <libdeflate.h>
 -#endif
 +#include <zlib.h>
+ 
  #include <string.h>
+ #ifdef _MSC_VER
+@@ -41,12 +27,6 @@ static inline int strcasecmp (const char* a, const char* b)
+ }
+ #endif
  
 -#if (                                                                          \
 -    LIBDEFLATE_VERSION_MAJOR > 1 ||                                            \
@@ -42,7 +47,7 @@ index d64d071e..eab434af 100644
  /* value Aras found to be better trade off of speed vs size */
  #define EXR_DEFAULT_ZLIB_COMPRESS_LEVEL 4
  
-@@ -49,7 +29,7 @@ exr_compress_max_buffer_size (size_t in_bytes)
+@@ -57,7 +37,7 @@ exr_compress_max_buffer_size (size_t in_bytes)
  {
      size_t r, extra;
  
@@ -51,7 +56,7 @@ index d64d071e..eab434af 100644
      /*
       * lib deflate has a message about needing a 9 byte boundary
       * but is unclear if it actually adds that or not
-@@ -95,19 +75,8 @@ exr_compress_buffer (
+@@ -103,19 +83,8 @@ exr_compress_buffer (
      size_t              out_bytes_avail,
      size_t*             actual_out)
  {
@@ -73,7 +78,7 @@ index d64d071e..eab434af 100644
  
      if (level < 0)
      {
-@@ -116,25 +85,11 @@ exr_compress_buffer (
+@@ -124,87 +93,17 @@ exr_compress_buffer (
          if (level < 0) level = EXR_DEFAULT_ZLIB_COMPRESS_LEVEL;
      }
  
@@ -83,9 +88,7 @@ index d64d071e..eab434af 100644
 -    comp = libdeflate_alloc_compressor (level);
 -#endif
 -    if (comp)
-+    res = compress2 ((Bytef*)out, &outsz, (const Bytef*)in, in_bytes, level);
-+    if (res == Z_OK)
-     {
+-    {
 -        size_t outsz;
 -        outsz =
 -            libdeflate_zlib_compress (comp, in, in_bytes, out, out_bytes_avail);
@@ -98,18 +101,15 @@ index d64d071e..eab434af 100644
 -            return EXR_ERR_SUCCESS;
 -        }
 -        return EXR_ERR_OUT_OF_MEMORY;
-+        if (actual_out) *actual_out = outsz;
-+        return EXR_ERR_SUCCESS;
-     }
-     return EXR_ERR_OUT_OF_MEMORY;
- }
-@@ -150,64 +105,19 @@ exr_uncompress_buffer (
-     size_t              out_bytes_avail,
-     size_t*             actual_out)
- {
--    struct libdeflate_decompressor* decomp;
--    enum libdeflate_result          res;
--    size_t                          actual_in_bytes;
+-    }
+-    return EXR_ERR_OUT_OF_MEMORY;
+-}
+-
+-/**************************************/
+-
+-static struct libdeflate_decompressor*
+-create_deflate_context (exr_const_context_t ctxt)
+-{
 -#ifdef EXR_USE_CONFIG_DEFLATE_STRUCT
 -    struct libdeflate_options opt = {
 -        .sizeof_options = sizeof (struct libdeflate_options),
@@ -117,28 +117,104 @@ index d64d071e..eab434af 100644
 -        .free_func      = ctxt ? ctxt->free_fn : internal_exr_free};
 -#endif
 -
--//    if (in_bytes == out_bytes_avail)
--//    {
--//        if (actual_out) *actual_out = in_bytes;
--//        if (in != out)
--//            memcpy(out, in, in_bytes);
--//
--//        return EXR_ERR_SUCCESS;
--//    }
--
 -#ifdef EXR_USE_CONFIG_DEFLATE_STRUCT
--    decomp = libdeflate_alloc_decompressor_ex (&opt);
+-    return libdeflate_alloc_decompressor_ex (&opt);
 -#else
 -    libdeflate_set_memory_allocator (
 -        ctxt ? ctxt->alloc_fn : internal_exr_alloc,
 -        ctxt ? ctxt->free_fn : internal_exr_free);
--    decomp = libdeflate_alloc_decompressor ();
+-    return libdeflate_alloc_decompressor ();
 -#endif
+-}
+-
+-static inline exr_result_t
+-translate_deflate_result (
+-    enum libdeflate_result res,
+-    size_t actual_in_bytes,
+-    size_t in_bytes)
+-{
+-    if (res == LIBDEFLATE_SUCCESS)
+-    {
+-        if (in_bytes == actual_in_bytes) return EXR_ERR_SUCCESS;
+-        /* it's an error to not consume the full buffer, right? */
+-    }
+-    else if (res == LIBDEFLATE_INSUFFICIENT_SPACE)
++    res = compress2 ((Bytef*)out, &outsz, (const Bytef*)in, in_bytes, level);
++    if (res == Z_OK)
+     {
+-        return EXR_ERR_OUT_OF_MEMORY;
+-    }
+-    else if (res == LIBDEFLATE_SHORT_OUTPUT)
+-    {
+-        /* Decompression succeeded; *actual_out is the byte count. This is
+-         * not an error when out_bytes_avail exceeds the true uncompressed
+-         * size (e.g. PXR24/ZIP use padded scratch buffers). Callers that
+-         * need an exact payload size must compare *actual_out (see e.g.
+-         * undo_pxr24_impl). */
++        if (actual_out) *actual_out = outsz;
+         return EXR_ERR_SUCCESS;
+     }
+-    return EXR_ERR_CORRUPT_CHUNK;
++    return EXR_ERR_OUT_OF_MEMORY;
+ }
+ 
+ /**************************************/
+ 
+-static void internal_free_zip_context (exr_decode_pipeline_t* decode)
+-{
+-    struct libdeflate_decompressor* decomp = decode->compression_context;
 -    if (decomp)
+-        libdeflate_free_decompressor (decomp);
+-}
+-
+ exr_result_t internal_exr_decode_uncompress_buffer (
+     exr_decode_pipeline_t* decode,
+     const void*            in,
+@@ -213,31 +112,6 @@ exr_result_t internal_exr_decode_uncompress_buffer (
+     size_t                 out_bytes_avail,
+     size_t*                actual_out)
+ {
+-    if (decode->pipe_size >= sizeof (exr_decode_pipeline_v2_t))
+-    {
+-        struct libdeflate_decompressor* decomp;
+-        enum libdeflate_result          res;
+-        size_t                          actual_in_bytes;
+-
+-        /* we can cache the context... */
+-        if (decode->compression_context == NULL)
+-        {
+-            decode->compression_context = create_deflate_context (decode->context);
+-            decode->free_compression_context = &internal_free_zip_context;
+-        }
+-        decomp = decode->compression_context;
+-
+-        res = libdeflate_zlib_decompress_ex (
+-            decomp,
+-            in,
+-            in_bytes,
+-            out,
+-            out_bytes_avail,
+-            &actual_in_bytes,
+-            actual_out);
+-
+-        return translate_deflate_result (res, actual_in_bytes, in_bytes);
+-    }
+     return exr_uncompress_buffer (decode->context, in, in_bytes,
+                                   out, out_bytes_avail, actual_out);
+ }
+@@ -253,25 +127,20 @@ exr_uncompress_buffer (
+     size_t              out_bytes_avail,
+     size_t*             actual_out)
+ {
+-    struct libdeflate_decompressor* decomp;
+-    enum libdeflate_result          res;
+-    size_t                          actual_in_bytes;
 +    int    res             = Z_OK;
 +    uLongf outsz           = out_bytes_avail;
 +    uLongf actual_in_bytes = in_bytes;
-+
+ 
+-    decomp = create_deflate_context (ctxt);
+-    if (decomp)
 +    res = uncompress2 ((Bytef*)out, &outsz, (const Bytef*)in, &actual_in_bytes);
 +    if (res == Z_OK)
 +    {
@@ -159,27 +235,11 @@ index d64d071e..eab434af 100644
 -
 -        libdeflate_free_decompressor (decomp);
 -
--        if (res == LIBDEFLATE_SUCCESS)
--        {
--            if (in_bytes == actual_in_bytes) return EXR_ERR_SUCCESS;
--            /* it's an error to not consume the full buffer, right? */
--        }
--        else if (res == LIBDEFLATE_INSUFFICIENT_SPACE)
--        {
--            return EXR_ERR_OUT_OF_MEMORY;
--        }
--        else if (res == LIBDEFLATE_SHORT_OUTPUT)
--        {
--            /* Decompression succeeded; *actual_out is the byte count. This is
--             * not an error when out_bytes_avail exceeds the true uncompressed
--             * size (e.g. PXR24/ZIP use padded scratch buffers). Callers that
--             * need an exact payload size must compare *actual_out (see e.g.
--             * undo_pxr24_impl). */
--            return EXR_ERR_SUCCESS;
--        }
-         return EXR_ERR_CORRUPT_CHUNK;
+-        return translate_deflate_result (res, actual_in_bytes, in_bytes);
++        return EXR_ERR_CORRUPT_CHUNK;
      }
      return EXR_ERR_OUT_OF_MEMORY;
+ }
 -- 
-2.54.0
+2.55.0
 

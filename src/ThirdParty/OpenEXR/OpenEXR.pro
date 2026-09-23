@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.4.15
+THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.5.0
 THIRDPARTY_OPENEXR_CONFIG_PATH = $${PWD}/config
 THIRDPARTY_IMATH_PATH = $${PWD}/Imath-3.2.3
 THIRDPARTY_OPENEXR_INCLUDE_PATH = $${PWD}/include
@@ -18,11 +18,13 @@ THIRDPARTY_OPENEXR_INCLUDE_PATH = $${PWD}/include
 include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../zlib/zlib.pri)
+include(../Zstandard/Zstandard.pri)
 include(../OpenJPEG/OpenJPEG.pri)
 include(../OpenJPH/OpenJPH.pri)
 
 INCLUDEPATH = \
     $${THIRDPARTY_OPENEXR_CONFIG_PATH} \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH} \
     $${THIRDPARTY_IMATH_PATH}/src/Imath \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/IlmThread \
@@ -33,7 +35,7 @@ INCLUDEPATH = \
 
 disable_openjph: DEFINES += OPENEXR_DISABLE_OJPH
 
-# cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON=OFF -DBUILD_WEBSITE=OFF -DBUILD_TESTING=OFF -DOPENEXR_INSTALL=ON -DOPENEXR_INSTALL_TOOLS=OFF -DOPENEXR_BUILD_LIBS=ON -DOPENEXR_BUILD_TOOLS=OFF -DOPENEXR_BUILD_EXAMPLES=OFF -DOPENEXR_INSTALL_DOCS=OFF -DOPENEXR_BUILD_PYTHON=OFF -DOPENEXR_TEST_LIBRARIES=OFF -DOPENEXR_TEST_TOOLS=OFF -DOPENEXR_TEST_PYTHON=OFF -DBUILD_SHARED_LIBS=OFF -DOPENEXR_USE_CLANG_TIDY=OFF -DOPENEXR_FORCE_INTERNAL_DEFLATE=ON -DOPENEXR_FORCE_INTERNAL_IMATH=ON -DOPENEXR_FORCE_INTERNAL_OPENJPH=ON -DOPENEXR_USE_TBB=OFF ..
+# cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON=OFF -DBUILD_WEBSITE=OFF -DBUILD_TESTING=OFF -DOPENEXR_INSTALL=ON -DOPENEXR_INSTALL_TOOLS=OFF -DOPENEXR_BUILD_LIBS=ON -DOPENEXR_BUILD_TOOLS=OFF -DOPENEXR_BUILD_EXAMPLES=OFF -DOPENEXR_INSTALL_DOCS=OFF -DOPENEXR_BUILD_PYTHON=OFF -DOPENEXR_TEST_LIBRARIES=OFF -DOPENEXR_TEST_TOOLS=OFF -DOPENEXR_TEST_PYTHON=OFF -DBUILD_SHARED_LIBS=OFF -DOPENEXR_USE_CLANG_TIDY=OFF -DOPENEXR_FORCE_INTERNAL_DEFLATE=ON -DOPENEXR_FORCE_INTERNAL_IMATH=ON -DOPENEXR_FORCE_INTERNAL_OPENJPH=ON -DOPENEXR_FORCE_INTERNAL_ZSTD=ON -DOPENEXR_USE_TBB=OFF ..
 
 # find ./src/Imath -name '*.cpp' -or -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_IMATH_PATH}| ; s|$| \\|'
 SOURCES += \
@@ -105,6 +107,7 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChannelListAttribute.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChromaticities.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChromaticitiesAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfColorMetadata.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompositeDeepScanLine.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompression.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressionAttribute.cpp \
@@ -191,6 +194,7 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfWav.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZip.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZipCompressor.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZstdCompressor.cpp \
 \#    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/dwaLookups.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/attributes.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/base.c \
@@ -198,6 +202,7 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/channel_list.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/chunk.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/coding.c \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/color_metadata.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/compression.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/context.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/debug.c \
@@ -218,6 +223,9 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_rle.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_structs.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_zip.c \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_zstd.c \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_zstd_delta.c \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_zstd_shuffle.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/memory.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/opaque.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/pack.c \
@@ -274,10 +282,12 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCheckedArithmetic.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChromaticities.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChromaticitiesAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfColorMetadata.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompositeDeepScanLine.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompression.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressionAttribute.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressorDeepInternal.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfContext.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfContextInit.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfConvert.h \
@@ -376,6 +386,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfXdr.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZip.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZipCompressor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZstdCompressor.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/backward_compatibility.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_attr.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_bytes.h \
@@ -395,7 +406,9 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_file.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_float_vector.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_ht_common.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_ht_quality.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_huf.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_legacy_structs.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_memory.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_opaque.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_posix_file_impl.h \
@@ -412,6 +425,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_base.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_chunkio.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_coding.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_color_metadata.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_compression.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_config.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_context.h \
@@ -514,10 +528,12 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCheckedArithmetic.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfChromaticities.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfChromaticitiesAttribute.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfColorMetadata.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompositeDeepScanLine.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompression.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompressionAttribute.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompressor.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompressorDeepInternal.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfContext.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfContextInit.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfConvert.h \
@@ -632,6 +648,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfXdr.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfZip.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfZipCompressor.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfZstdCompressor.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/OpenEXRConfig.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/backward_compatibility.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_attr.h \
@@ -652,7 +669,9 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_file.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_float_vector.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_ht_common.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_ht_quality.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_huf.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_legacy_structs.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_memory.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_opaque.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_posix_file_impl.h \
@@ -669,6 +688,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_base.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_chunkio.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_coding.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_color_metadata.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_compression.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_config.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_context.h \

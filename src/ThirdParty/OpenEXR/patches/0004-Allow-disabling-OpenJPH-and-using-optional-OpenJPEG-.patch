@@ -1,20 +1,20 @@
-From 21cce7ecfdbcacd7d6561bae4ef8d5fe732bffc6 Mon Sep 17 00:00:00 2001
+From f3bf6072d9ce3e2312533ef9b2a3342ae0022ebc Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 6 Oct 2025 01:39:17 +0700
 Subject: [PATCH 4/5] Allow disabling OpenJPH and using optional OpenJPEG
  instead
 
 ---
- src/lib/OpenEXRCore/internal_ht.cpp | 232 ++++++++++++++++++++++++++++
- 1 file changed, 232 insertions(+)
+ src/lib/OpenEXRCore/internal_ht.cpp | 234 ++++++++++++++++++++++++++++
+ 1 file changed, 234 insertions(+)
 
 diff --git a/src/lib/OpenEXRCore/internal_ht.cpp b/src/lib/OpenEXRCore/internal_ht.cpp
-index 0e30fd58..882cd92e 100644
+index 9023d63b..23e3265e 100644
 --- a/src/lib/OpenEXRCore/internal_ht.cpp
 +++ b/src/lib/OpenEXRCore/internal_ht.cpp
-@@ -7,17 +7,25 @@
- #include <string>
+@@ -10,12 +10,19 @@
  #include <fstream>
+ #include <memory>
  
 +#ifndef OPENEXR_DISABLE_OJPH
  #include <openjph/ojph_arch.h>
@@ -32,13 +32,15 @@ index 0e30fd58..882cd92e 100644
  
  #include "openexr_decode.h"
  #include "openexr_encode.h"
- #include "internal_ht_common.h"
+@@ -24,6 +31,7 @@
+ #include "internal_ht_quality.h"
+ #include "internal_legacy_structs.h"
  
 +#ifndef OPENEXR_DISABLE_OJPH
  /**
   * OpenJPH output file that is backed by a fixed-size memory buffer
   */
-@@ -156,6 +164,66 @@ class staticmem_outfile : public ojph::outfile_base
+@@ -162,11 +170,73 @@ class staticmem_outfile : public ojph::outfile_base
      ojph::ui8 *buf;
      ojph::ui8 *cur_ptr;
    };
@@ -103,17 +105,24 @@ index 0e30fd58..882cd92e 100644
 +}
 +#endif
  
- static exr_result_t
- ht_undo_impl (
-@@ -209,6 +277,7 @@ ht_undo_impl (
-         cs_to_file_ch[cs_i].raster_line_offset = computedoffset;
+ struct ht_context_cache
+ {
+     std::vector<CodestreamChannelInfo> cs_to_file_ch;
++#ifndef OPENEXR_DISABLE_OJPH
+     ojph::codestream cs;
++#endif
+     size_t header_sz = 0;
+ };
+ 
+@@ -318,6 +388,7 @@ ht_undo_impl (
+         }
      }
  
 +#ifndef OPENEXR_DISABLE_OJPH
      ojph::mem_infile infile;
      infile.open (
-         reinterpret_cast<const ojph::ui8*> (compressed_data) + header_sz,
-@@ -359,6 +428,164 @@ ht_undo_impl (
+         reinterpret_cast<const ojph::ui8*> (compressed_data) + ctxt->header_sz,
+@@ -522,6 +593,164 @@ ht_undo_impl (
      }
  
      infile.close ();
@@ -134,8 +143,8 @@ index 0e30fd58..882cd92e 100644
 +            throw std::runtime_error("opj_stream_default_create failed");
 +
 +        staticmem_outfile ctx;
-+        ctx.buffer = reinterpret_cast<const char*>(compressed_data) + header_sz;
-+        ctx.size = comp_buf_size - header_sz;
++        ctx.buffer = reinterpret_cast<const char*>(compressed_data) + ctxt->header_sz;
++        ctx.size = comp_buf_size - ctxt->header_sz;
 +        ctx.curr = 0;
 +
 +        opj_stream_set_user_data(stream, reinterpret_cast<void*>(&ctx), &stream_free_callback);
@@ -272,21 +281,21 @@ index 0e30fd58..882cd92e 100644
 +    opj_destroy_codec(codec);
 +    opj_stream_destroy(stream);
 +#else
-+    (void)header_sz;
++    (void)ctxt;
 +    rv = EXR_ERR_FEATURE_NOT_IMPLEMENTED;
 +#endif
  
      return rv;
  }
-@@ -390,6 +617,7 @@ internal_exr_undo_ht (
+@@ -553,6 +782,7 @@ internal_exr_undo_ht (
  static exr_result_t
  ht_apply_impl (exr_encode_pipeline_t* encode)
  {
 +#ifndef OPENEXR_DISABLE_OJPH
      exr_result_t rv = EXR_ERR_SUCCESS;
  
-     std::vector<CodestreamChannelInfo> cs_to_file_ch (encode->channel_count);
-@@ -563,6 +791,10 @@ ht_apply_impl (exr_encode_pipeline_t* encode)
+     std::vector<CodestreamChannelInfo> cs_channel_info (encode->channel_count);
+@@ -877,6 +1107,10 @@ ht_apply_impl (exr_encode_pipeline_t* encode)
      }
  
      return rv;

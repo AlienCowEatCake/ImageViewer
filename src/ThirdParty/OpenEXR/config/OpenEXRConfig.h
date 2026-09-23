@@ -18,19 +18,23 @@
 
 #ifndef INCLUDED_OPENEXR_VERSION_H
 #define OPENEXR_VERSION_MAJOR 3
-#define OPENEXR_VERSION_MINOR 4
-#define OPENEXR_VERSION_PATCH 15
-#define OPENEXR_SOVERSION 33
+#define OPENEXR_VERSION_MINOR 5
+#define OPENEXR_VERSION_PATCH 0
+#define OPENEXR_SOVERSION 34
 #endif
 
 #define OPENEXR_IMATH_SOVERSION 30
 #define OPENEXR_IMATH_VERSION_MAJOR 3
 #define OPENEXR_IMATH_VERSION_MINOR 2
-#define OPENEXR_IMATH_VERSION_PATCH 2
+#define OPENEXR_IMATH_VERSION_PATCH 0
 
 #define OPENEXR_OPENJPH_VERSION_MAJOR 0
-#define OPENEXR_OPENJPH_VERSION_MINOR 31
+#define OPENEXR_OPENJPH_VERSION_MINOR 32
 #define OPENEXR_OPENJPH_VERSION_PATCH 0
+
+#define OPENEXR_ZSTD_VERSION_MAJOR 1
+#define OPENEXR_ZSTD_VERSION_MINOR 5
+#define OPENEXR_ZSTD_VERSION_PATCH 7
 
 //
 // Options / configuration based on O.S. / compiler
@@ -53,7 +57,7 @@
 // Current internal library namespace name
 //
 #define OPENEXR_IMF_INTERNAL_NAMESPACE_CUSTOM 0
-#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf_3_4
+#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf_3_5
 
 //
 // Current public user namespace name
@@ -66,14 +70,14 @@
 // Version string for runtime access
 //
 
-#define OPENEXR_VERSION_STRING "3.4.15"
-#define OPENEXR_PACKAGE_STRING "OpenEXR 3.4.15"
+#define OPENEXR_VERSION_STRING "3.5.0"
+#define OPENEXR_PACKAGE_STRING "OpenEXR 3.5.0-dev"
 
-#define OPENEXR_VERSION_RELEASE_TYPE ""
+#define OPENEXR_VERSION_RELEASE_TYPE "-dev"
 // Deprecated, for back compatibility:
-#define OPENEXR_VERSION_EXTRA ""
+#define OPENEXR_VERSION_EXTRA "-dev"
 
-#define OPENEXR_LIB_VERSION_STRING "33.3.4.15"
+#define OPENEXR_LIB_VERSION_STRING "34.3.5.0"
 
 // clang-format on
 
@@ -181,16 +185,12 @@
 
 #endif
 
-#if defined(__cplusplus) && (__cplusplus >= 201402L)
+#if defined(_MSC_VER)
+#    define OPENEXR_DEPRECATED(msg) __declspec(deprecated (msg))
+#elif defined(__GNUC__)
+#    define OPENEXR_DEPRECATED(msg) __attribute__ ((deprecated (msg)))
+#elif defined(__cplusplus) && (__cplusplus >= 201402L)
 #    define OPENEXR_DEPRECATED(msg) [[deprecated (msg)]]
-#endif
-
-#ifndef OPENEXR_DEPRECATED
-#    ifdef _MSC_VER
-#        define OPENEXR_DEPRECATED(msg) __declspec(deprecated (msg))
-#    else
-#        define OPENEXR_DEPRECATED(msg) __attribute__ ((deprecated (msg)))
-#    endif
 #endif
 
 #endif // INCLUDED_OPENEXR_CONFIG_H

@@ -677,6 +677,9 @@ disable_cxx17 : !system_libheif {
 disable_zlib : !system_openexr {
     CONFIG *= disable_openexr
 }
+disable_zstd : !system_openexr {
+    CONFIG *= disable_openexr
+}
 *msvc* : !system_openexr : lessThan(MSVC_VERSION, 2017) {
     CONFIG *= disable_openexr
 }

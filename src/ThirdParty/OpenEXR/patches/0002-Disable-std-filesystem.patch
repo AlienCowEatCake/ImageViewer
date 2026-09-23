@@ -1,19 +1,19 @@
-From e26bee8a0c028fafa4682e89b7a636bf1ed85147 Mon Sep 17 00:00:00 2001
+From 0897b706be48695bb8f67d7dc2c66adf03a7cdef Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 20 Oct 2024 06:07:30 +0700
-Subject: [PATCH 2/3] Disable std::filesystem
+Subject: [PATCH 2/5] Disable std::filesystem
 
 ---
  src/lib/OpenEXR/ImfStdIO.cpp | 8 ++++++++
  1 file changed, 8 insertions(+)
 
 diff --git a/src/lib/OpenEXR/ImfStdIO.cpp b/src/lib/OpenEXR/ImfStdIO.cpp
-index c5c4a26b..48973805 100644
+index df0b3abe..1b8c91f4 100644
 --- a/src/lib/OpenEXR/ImfStdIO.cpp
 +++ b/src/lib/OpenEXR/ImfStdIO.cpp
 @@ -14,11 +14,13 @@
- #include <ImfMisc.h>
- #include <ImfStdIO.h>
+ #include "ImfMisc.h"
+ #include "ImfStdIO.h"
  #include <errno.h>
 +/*
  #include <filesystem>
@@ -58,5 +58,5 @@ index c5c4a26b..48973805 100644
  
  void
 -- 
-2.49.0
+2.55.0
 
