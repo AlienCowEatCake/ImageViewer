@@ -10,7 +10,7 @@ TARGET = tp_libexpat
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.8.4
+THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.8.5
 THIRDPARTY_LIBEXPAT_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -51,6 +51,7 @@ HEADERS += \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/expat.h \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/expat_external.h \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/fallthrough.h \
+    $${THIRDPARTY_LIBEXPAT_PATH}/lib/hash_table.h \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/iasciitab.h \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/internal.h \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/latin1tab.h \
