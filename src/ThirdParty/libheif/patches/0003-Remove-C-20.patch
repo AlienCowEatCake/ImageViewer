@@ -1,4 +1,4 @@
-From 9e166139099a1ab60e9bd8c642b71d4225a479c6 Mon Sep 17 00:00:00 2001
+From c800798ac86ad4657c9c1e6785bdc2799d8228af Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 23 Nov 2024 20:17:00 +0700
 Subject: [PATCH 3/4] Remove C++20
@@ -60,7 +60,7 @@ index a2ed77ae..836b4388 100644
      }
    }
 diff --git a/libheif/bitstream.cc b/libheif/bitstream.cc
-index 57d617af..8bf8f98b 100644
+index ec6a02ea..bd8ab46e 100644
 --- a/libheif/bitstream.cc
 +++ b/libheif/bitstream.cc
 @@ -26,12 +26,6 @@
@@ -76,7 +76,7 @@ index 57d617af..8bf8f98b 100644
  #define MAX_UVLC_LEADING_ZEROS 20
  
  
-@@ -351,12 +345,6 @@ int64_t BitstreamRange::read64s()
+@@ -360,12 +354,6 @@ int64_t BitstreamRange::read64s()
  
  float BitstreamRange::read_float32()
  {
@@ -89,7 +89,7 @@ index 57d617af..8bf8f98b 100644
    // TODO: I am not sure this works everywhere as there seem to be systems where
    //       the float byte order is different from the integer endianness
    //       https://en.wikipedia.org/wiki/Endianness#Floating_point
-@@ -364,24 +352,17 @@ float BitstreamRange::read_float32()
+@@ -373,24 +361,17 @@ float BitstreamRange::read_float32()
    float f;
    memcpy(&f, &i, sizeof(float));
    return f;
@@ -286,10 +286,10 @@ index 636483d5..455f3c12 100644
    else {
      // we use dense packing
 diff --git a/libheif/color-conversion/bayer_bilinear.cc b/libheif/color-conversion/bayer_bilinear.cc
-index 4ce307c1..5a11094d 100644
+index 5d7128e1..121896cb 100644
 --- a/libheif/color-conversion/bayer_bilinear.cc
 +++ b/libheif/color-conversion/bayer_bilinear.cc
-@@ -168,8 +168,9 @@ Op_bayer_bilinear_to_RGB24_32::convert_colorspace(const std::shared_ptr<const He
+@@ -174,8 +174,9 @@ Op_bayer_bilinear_to_RGB24_32::convert_colorspace(const std::shared_ptr<const He
    }
  
    // Bilinear demosaicing using precomputed offset tables.
@@ -301,7 +301,7 @@ index 4ce307c1..5a11094d 100644
        for (uint32_t x = 0; x < width; x++) {
          const auto& offsets = neighbor_offsets[(y % ph) * pw + (x % pw)];
 diff --git a/libheif/context.cc b/libheif/context.cc
-index f433606a..5c258059 100644
+index 04e6566b..bbf2dbf2 100644
 --- a/libheif/context.cc
 +++ b/libheif/context.cc
 @@ -352,7 +352,7 @@ std::shared_ptr<const ImageItem> HeifContext::get_primary_image(bool return_erro
@@ -380,10 +380,10 @@ index d0b75292..5af82e17 100644
                   heif_suberror_Unspecified,
                   "'iref' has cyclic references"};
 diff --git a/libheif/image-items/overlay.cc b/libheif/image-items/overlay.cc
-index 5ab6ab20..203e0edb 100644
+index ece7bc27..7d40424e 100644
 --- a/libheif/image-items/overlay.cc
 +++ b/libheif/image-items/overlay.cc
-@@ -301,7 +301,7 @@ Result<std::shared_ptr<HeifPixelImage>> ImageItem_Overlay::decode_compressed_ima
+@@ -302,7 +302,7 @@ Result<std::shared_ptr<HeifPixelImage>> ImageItem_Overlay::decode_compressed_ima
  Result<std::shared_ptr<HeifPixelImage>> ImageItem_Overlay::decode_overlay_image(const heif_decoding_options& options,
                                                                                  DecodeTraversalState decode_state) const
  {
