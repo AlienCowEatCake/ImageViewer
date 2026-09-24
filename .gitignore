@@ -91,3 +91,7 @@ Makefile*
 !/buildscripts/resvg/**/*.lib
 !/buildscripts/resvg/**/*.dll
 !/buildscripts/resvg/**/*.dylib
+
+# Allow all pattern in patch names
+!**/*.diff
+!**/*.patch
