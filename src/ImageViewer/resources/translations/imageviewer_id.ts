@@ -469,12 +469,12 @@
         <location filename="../../src/GUI/MainController.cpp" line="367"/>
         <location filename="../../src/GUI/MainController.cpp" line="430"/>
         <source>Failed to open file &quot;%1&quot;</source>
-        <translation>Gagal membuka berkas "%1"</translation>
+        <translation>Gagal membuka berkas &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="180"/>
         <source>Failed to open files &quot;%1&quot;</source>
-        <translation>Gagal membuka berkas "%1"</translation>
+        <translation>Gagal membuka berkas &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="181"/>
@@ -494,7 +494,7 @@
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="194"/>
         <source>Failed to open folder &quot;%1&quot;</source>
-        <translation>Gagal membuka folder "%1"</translation>
+        <translation>Gagal membuka folder &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="206"/>
@@ -509,7 +509,7 @@
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="224"/>
         <source>Failed to delete file &quot;%1&quot;</source>
-        <translation>Gagal menghapus berkas "%1"</translation>
+        <translation>Gagal menghapus berkas &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
